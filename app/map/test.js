@@ -6,6 +6,20 @@
 /*fetch('/geojson/country')
   .then(res => res.json())
   .then(main);*/
+
+
+alertes = {
+deps :[ {dep:35 , c:3 } ,  {dep:31 , c:2 } ],
+communes :[ {cp:35230 , c:3 } ,{cp:35890 , c:3 },{cp:35131 , c:3 },
+{cp:35770 , c:3 },{cp:3500 , c:3 },{cp:35230 , c:3 },{cp:35230 , c:3 },
+{cp:31120 , c:2 },{cp:31320 , c:2 },{cp:31600 , c:2 },{cp:31860 , c:2 }
+]
+};
+
+
+
+ 
+
   id = 0;
   idc = 0 ;
   main();
@@ -30,22 +44,10 @@
   
    L.tileLayer('https://{s}.basemaps.cartocdn.com/light_nolabels/{z}/{x}/{y}.png').addTo(map);
   
-    const url = '/{z}/{x}/{y}?pbf=true';
+    const url = '/{z}/{x}/{y}?pbf';
     var openmaptilesVectorTileOptions = {
          rendererFactory: L.canvas.tile,
-        
-       // rendererFactory: L.svg.tile,
-       onEachFeature: function(feature, featureLayer, vtLayer, tileCoords) {
-      /*  if(vtLayer.name === 'place_label' && feature.properties.localrank > 60) {
-            var latlng = this.vtGeometryToLatLng(feature.geometry[0], vtLayer, tileCoords)
-            marker = new L.Marker(latlng);
-            marker.bindTooltip(feature.properties.name).openTooltip();
-            this.addUserLayer(marker, tileCoords);
-        }*/
-        console.log(  feature) ;
-    },
-
-        vectorTileLayerStyles: {
+         vectorTileLayerStyles: {
 			dep: function(properties ,zoom) { 
                 return styleDep(properties ,zoom) 
             },
@@ -69,14 +71,11 @@
     var tootltip = L.tooltip();
 
     var tilesPbfLayer = L.vectorGrid.protobuf(url, openmaptilesVectorTileOptions)
- //  
-     .on('click', function(e) {
-     //  console.log('denis' ,  e.target._dataLayerNames );
-       //console.log('denis' ,  e.layer );
-       console.log(  map.getZoom() , e.getFeatureId) ;
+        .on('click', function(e) {
+      
        if( map.getZoom() < 9  ) {
         if (e.layer  )
-        popup.setContent(e.layer.properties.NAME)
+            popup.setContent(e.layer.properties.NAME)
         if (id != 0) {
             tilesPbfLayer.setFeatureStyle(id , {
                 fill: true,
@@ -88,7 +87,7 @@
             });
         }
         id = e.layer.properties.DEP ;
-        console.log( id );
+
                 setTimeout(function() {
                     tilesPbfLayer.setFeatureStyle(id, {
                         fillColor: 'green' ,
@@ -98,8 +97,9 @@
 
        } else {
 
-
-        popup.setContent(e.layer.properties.NAME)
+        // var v = (e.layer.properties.CP ) ? e.layer.properties.CP : e.layer.properties.NAME
+        var v =  e.layer.properties.NAME ;
+        popup.setContent(v) ;
         if (id != 0) {
             tilesPbfLayer.setFeatureStyle(id , {
                      
@@ -132,15 +132,30 @@
 
  tilesPbfLayer.bindPopup(popup);
 
+
+
+ //////style departements
   function styleDep(properties ,zoom) {
 
     var fill = true ;
     var weight = 0.8 ;
-    var fillcolor = 'green'
+    var fillcolor = 'green' ;
+    var fillOpacity = 0.3 ;
     if( zoom < 9 ) {
-        if( properties.DEP == '35' ) {
-            fillcolor ='red' ;
-        }  
+
+        alertes.deps.forEach((item, value) => {
+           
+            if( properties.DEP == item.dep ) {
+                if ( item.c  == 3 )  fillcolor ='red' ;
+                else fillcolor ='orange' ;
+
+                fillOpacity = 1 ;
+            }
+           
+          })
+
+
+    
        
     }    
 
@@ -148,7 +163,7 @@
            // fill: true is needed
            fill: fill,
            fillColor: fillcolor ,
-           fillOpacity: 0.1,
+           fillOpacity: fillOpacity,
            stroke: true,
            color: "#000000",
            weight: weight,
@@ -156,17 +171,24 @@
        };
   }
     
+  //////style communes
   function styleCommunes(properties ,zoom) {
 
     var fillcolor = '#e0e0d2' ;
     var fillOpacity = 0.5 ;
-  //  if( zoom >= 9 ) {
-        if( properties.CP == '35230' ) {
-            fillcolor ='red' ;
-            fillOpacity= 1 ;
+
+    alertes.communes.forEach((item, value) => {
+
+        if( properties.CP == item.cp ) {
+            if ( item.c  == 3 )  fillcolor ='red' ;
+            else fillcolor ='orange' ;
+            fillOpacity = 1 ;
+        
         }  
-       
- //   }    
+
+    } );
+
+  
 
     return {
                         

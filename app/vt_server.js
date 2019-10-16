@@ -18,7 +18,7 @@ const views = __dirname + '/map/';
 
 // https://www.wrld3d.com/wrld.js/latest/docs/leaflet/L.GridLayer/
 
-const PORT = 6300;
+const PORT = 8080;
 
 const mercator = new SphericalMercator({ size: 256 });
 
