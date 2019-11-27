@@ -18,7 +18,7 @@ const views = __dirname + '/map/';
 
 // https://www.wrld3d.com/wrld.js/latest/docs/leaflet/L.GridLayer/
 
-const PORT = 8080;
+const PORT = 6300;
 
 const mercator = new SphericalMercator({ size: 256 });
 
@@ -113,6 +113,8 @@ router.get('/:z/:x/:y', (req, res) => {
     return res.status(304).send();
   }
   const [x, y, z] = [+req.params.x, +req.params.y, +req.params.z];
+  console.log( x , y ,z );
+
   const dep = depTileIndex.getTile(z, x, y) || emptyFeatCollection;
   var buff = null;
   if ( z >= 9 ) {
@@ -124,10 +126,53 @@ router.get('/:z/:x/:y', (req, res) => {
   }
 
 //  const points = pointTileIndex.getTile(z, x, y) || emptyFeatCollection;
- 
+  
+
   res.status(200).send(buff);
 });
 
+
+router.get('/store/:z/:x/:y', (req, res) => {
+  const [x, y, z] = [+req.params.x, +req.params.y, +req.params.z];
+  const dep = depTileIndex.getTile(z, x, y) || emptyFeatCollection;
+  var buff = null;
+  if ( z >= 9 ) {
+    const communes = communesTileIndex.getTile(z, x, y) || emptyFeatCollection;
+    buff = vtpbf.fromGeojsonVt(  {'dep': dep  , 'communes': communes   } );
+  } else {
+ 
+    buff = vtpbf.fromGeojsonVt( {'dep': dep  });
+  }
+
+//  const points = pointTileIndex.getTile(z, x, y) || emptyFeatCollection;
+  var path = __dirname + '/tiles/' + z + '/' + x ;
+  
+  fs.existsSync( path ) ||   fs.mkdirSync(path , { recursive: true } ) ;
+  var file = path +'/'+ y +'.pbf';
+  try {
+   console.log( '...create file '+ x+'/'+y+'/'+z  ) ;
+  fs.writeFileSync( file , buff) ;
+  res.status(200).send('ok');
+} catch(err) { 
+  console.error(err);
+}
+});
+
+
+/*
+router.get('/pbf/:z/:x/:y', (req, res) => {
+  const { type } = req.params;
+  if (type === 'country') {
+    res.json(countryGeoj);
+  } else if (type === 'point') {
+    res.json(pointGeoj);
+  } else {
+    res.status(404).send({ nah: 'b' });
+  }
+});
+*/
+
+/*
 router.get('/geojson/:type', (req, res) => {
   const { type } = req.params;
   if (type === 'country') {
@@ -138,8 +183,10 @@ router.get('/geojson/:type', (req, res) => {
     res.status(404).send({ nah: 'b' });
   }
 });
+*/
 
 app.use(express.static(views));
+app.use('/tiles', express.static(__dirname + '/tiles'));
 app.use('/', router);
 
 

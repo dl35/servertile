@@ -1,0 +1,6 @@
+{
+    "ignore": [
+      "tiles", 
+      "dist/*"
+    ]
+  }

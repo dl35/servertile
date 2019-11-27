@@ -40,11 +40,17 @@ communes :[ {cp:35230 , c:3 } ,{cp:35890 , c:3 },{cp:35131 , c:3 },
       preferCanvas: true,
     });
   
+
+
    //L.tileLayer('http://tile.openstreetmap.org/{z}/{x}/{y}.png').addTo(map);
   
    L.tileLayer('https://{s}.basemaps.cartocdn.com/light_nolabels/{z}/{x}/{y}.png').addTo(map);
   
-    const url = '/{z}/{x}/{y}?pbf';
+   console.log( map.getBounds() ) ;
+   console.log(getVisibleTilesCoords(map));
+
+    //const url = '/{z}/{x}/{y}?pbf';
+    const url = '/tiles/{z}/{x}/{y}.pbf';
     var openmaptilesVectorTileOptions = {
          rendererFactory: L.canvas.tile,
          vectorTileLayerStyles: {
@@ -202,6 +208,45 @@ communes :[ {cp:35230 , c:3 } ,{cp:35890 , c:3 },{cp:35131 , c:3 },
 
   }
 
+
+  function getVisibleTilesCoords(map)
+  {
+    
+    // get bounds, zoom and tileSize        
+    var bounds = map.getPixelBounds();
+    var zoom = map.getZoom();
+    var tileSize = 256;
+    var tileCoordsContainer = [];
+
+
+    // get NorthWest and SouthEast points
+    var nwTilePoint = new L.Point(Math.floor(bounds.min.x / tileSize),
+        Math.floor(bounds.min.y / tileSize));
+
+    var seTilePoint = new L.Point(Math.floor(bounds.max.x / tileSize),
+        Math.floor(bounds.max.y / tileSize));
+
+    // get max number of tiles in this zoom level
+    var max = map.options.crs.scale(zoom) / tileSize; 
+
+    // enumerate visible tiles 
+    for (var x = nwTilePoint.x; x <= seTilePoint.x; x++) 
+    {
+       for (var y = nwTilePoint.y; y <= seTilePoint.y; y++) 
+       {
+
+          var xTile = Math.abs(x % max);
+          var yTile = Math.abs(y % max);
+          
+          tileCoordsContainer.push({ 'x':xTile, 'y':yTile });
+          console.log('info ' + x + ' ' + y);
+          console.log('tile ' + xTile + ' ' + yTile);
+        }
+    }
+    
+    return tileCoordsContainer;
+    
+  };
 
 
 }

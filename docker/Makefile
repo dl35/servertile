@@ -9,7 +9,7 @@ HOTE=192.168.1.7
 
 
 dev: ## Run container on port configured in `config.env`--network="host" --name="$(NAME)"
-	docker run -e UID=$(USER_ID) --hostname="my-node" -it --rm -p 8080:8080 -v $(CURDIR)/../app:/app $(IMAGE)
+	docker run -e UID=$(USER_ID) --hostname="my-node" -it --rm -p 6300:6300 -v $(CURDIR)/../app:/app $(IMAGE)
 
 
 build:
