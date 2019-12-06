@@ -1,0 +1,5 @@
+https://www.weblog.eliaz.fr/article120.html
+
+# python .......
+
+sudo dnf install python2-fiona

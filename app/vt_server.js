@@ -22,21 +22,24 @@ const PORT = 6300;
 
 const mercator = new SphericalMercator({ size: 256 });
 
-// load features from file
-const countryGeoj = JSON.parse(fs.readFileSync('countries.geojson'));
-const pointGeoj = JSON.parse(fs.readFileSync('points-10000.geojson'));
+depGeoJson = './geojson/dep.geojson'
+communesGeoJson = './geojson/communes.geojson'
 
-const depGeo = JSON.parse(fs.readFileSync('departements.geojson'));
-const communesGeo = JSON.parse(fs.readFileSync('communes.geojson'));
+const depGeo = JSON.parse(fs.readFileSync( depGeoJson ));
+const communesGeo = JSON.parse(fs.readFileSync( communesGeoJson ));
+
+//const coursDeauGeo = JSON.parse(fs.readFileSync('cours_deau.geojson'));
+
 //const dep = JSON.parse(fs.readFileSync('dep.geojson'));
 
 
-
+/*
 // name the points so that we can id them
 for (let i = 0; i < pointGeoj.features.length; i++) {
   let point = pointGeoj.features[i];
   point.properties.name = `${i}`;
 }
+*/
 
 // tile index for Vector Tiles
 const depTileIndex = geojsonvt(depGeo, {
@@ -77,7 +80,41 @@ solidChildren: false,
 });
 
 
+/*
+const eauTileIndex = geojsonvt(coursDeauGeo, {
+  //  buffer: 0,
+  //  debug: 2,
+  solidChildren: false,
+    maxZoom: 13,  // max zoom to preserve detail on; can't be higher than 24
+    tolerance: 3, // simplification tolerance (higher means simpler)
+    extent: 4096, // tile extent (both width and height)
+    buffer: 64,   // tile buffer on each side
+    debug: 0,     // logging level (0 to disable, 1 or 2)
+    lineMetrics: true,
+  //  lineMetrics: true, // whether to enable line metrics tracking for LineString/MultiLineString features
+  //  promoteId: 'CP',    // name of a feature property to promote to feature.id. Cannot be used with `generateId`
+   //  generateId: true,  // whether to generate feature ids. Cannot be used with `promoteId`
+    indexMaxZoom: 4,       // max zoom in the initial tile index
+    indexMaxPoints: 10000 // max number of points per tile in the index
+  
+  
+  
+  });
+*/
 
+
+
+
+
+
+
+
+
+
+
+
+
+/*
 const pointTileIndex = geojsonvt(pointGeoj, {
   buffer: 0,
   debug: 2,
@@ -94,7 +131,7 @@ const pointTileIndex = geojsonvt(pointGeoj, {
   indexMaxPoints: 1000 // max number of points per tile in the index
 
 });
-
+*/
 // returned when empty tiles are requested
 const emptyFeatCollection = featureCollection([]);
 
@@ -113,13 +150,20 @@ router.get('/:z/:x/:y', (req, res) => {
     return res.status(304).send();
   }
   const [x, y, z] = [+req.params.x, +req.params.y, +req.params.z];
-  console.log( x , y ,z );
+  //console.log( x , y ,z );
 
   const dep = depTileIndex.getTile(z, x, y) || emptyFeatCollection;
   var buff = null;
-  if ( z >= 9 ) {
+
+  //console.log("zoom ",  z ) ;
+
+  if (  z > 10 ) {
     const communes = communesTileIndex.getTile(z, x, y) || emptyFeatCollection;
-    buff = vtpbf.fromGeojsonVt(  {'dep': dep  , 'communes': communes   } );
+    //const eau = eauTileIndex.getTile(z, x, y) || emptyFeatCollection;
+    buff = vtpbf.fromGeojsonVt(  {'dep': dep  , 'communes': communes  } );
+  } else  if ( z >= 9 ) {
+    const communes = communesTileIndex.getTile(z, x, y) || emptyFeatCollection;
+    buff = vtpbf.fromGeojsonVt(  {'dep': dep  , 'communes': communes } );
   } else {
  
     buff = vtpbf.fromGeojsonVt( {'dep': dep  });

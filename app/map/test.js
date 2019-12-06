@@ -10,13 +10,17 @@
 
 alertes = {
 deps :[ {dep:35 , c:3 } ,  {dep:31 , c:2 } ],
-communes :[ {cp:35230 , c:3 } ,{cp:35890 , c:3 },{cp:35131 , c:3 },
-{cp:35770 , c:3 },{cp:3500 , c:3 },{cp:35230 , c:3 },{cp:35230 , c:3 },
-{cp:31120 , c:2 },{cp:31320 , c:2 },{cp:31600 , c:2 },{cp:31860 , c:2 }
+communes :[ {insee:35206 , c:3 } ,{insee:35266 , c:3 },{insee:35066 , c:3 },
+{insee:35047 , c:3 },{insee:35235 , c:3 },{insee:35328 , c:3 },
+{insee:31555 , c:2 },{insee:31557 , c:2 },
+{insee:35288 , c:4 }
 ]
 };
 
-
+var noncouverte = [];
+$.getJSON("noncouverte.json", function(json) {
+    noncouverte = json ;
+});
 
  
 
@@ -46,11 +50,11 @@ communes :[ {cp:35230 , c:3 } ,{cp:35890 , c:3 },{cp:35131 , c:3 },
   
    L.tileLayer('https://{s}.basemaps.cartocdn.com/light_nolabels/{z}/{x}/{y}.png').addTo(map);
   
-   console.log( map.getBounds() ) ;
-   console.log(getVisibleTilesCoords(map));
+  // console.log( map.getBounds() ) ;
+  // console.log(getVisibleTilesCoords(map));
 
-    //const url = '/{z}/{x}/{y}?pbf';
-    const url = '/tiles/{z}/{x}/{y}.pbf';
+    const url = '/{z}/{x}/{y}?pbf';
+   // const url = '/tiles/{z}/{x}/{y}.pbf';
     var openmaptilesVectorTileOptions = {
          rendererFactory: L.canvas.tile,
          vectorTileLayerStyles: {
@@ -60,15 +64,17 @@ communes :[ {cp:35230 , c:3 } ,{cp:35890 , c:3 },{cp:35131 , c:3 },
             
            communes: function(properties ,zoom) {
                 return styleCommunes(properties ,zoom)
-                            }    
+                            } ,   
   
-
+        /*   eau: function(properties ,zoom) {
+                                return styleEau(properties ,zoom)
+                                            } ,*/
 		},
     
        interactive: true,
         maxZoom: 14,
         
-        getFeatureId: f => { ( f.properties.DEP ) ?  f.properties.DEP  : f.properties.CP } ,
+        getFeatureId: f => { ( f.properties.dep ) ?  f.properties.dep  : f.properties.insee } ,
         
     };
 
@@ -81,7 +87,7 @@ communes :[ {cp:35230 , c:3 } ,{cp:35890 , c:3 },{cp:35131 , c:3 },
       
        if( map.getZoom() < 9  ) {
         if (e.layer  )
-            popup.setContent(e.layer.properties.NAME)
+            popup.setContent(e.layer.properties.nom)
         if (id != 0) {
             tilesPbfLayer.setFeatureStyle(id , {
                 fill: true,
@@ -92,7 +98,7 @@ communes :[ {cp:35230 , c:3 } ,{cp:35890 , c:3 },{cp:35131 , c:3 },
                 weight: 0.1
             });
         }
-        id = e.layer.properties.DEP ;
+        id = e.layer.properties.dep ;
 
                 setTimeout(function() {
                     tilesPbfLayer.setFeatureStyle(id, {
@@ -104,7 +110,7 @@ communes :[ {cp:35230 , c:3 } ,{cp:35890 , c:3 },{cp:35131 , c:3 },
        } else {
 
         // var v = (e.layer.properties.CP ) ? e.layer.properties.CP : e.layer.properties.NAME
-        var v =  e.layer.properties.NAME ;
+        var v =  e.layer.properties.nom ;
         popup.setContent(v) ;
         if (id != 0) {
             tilesPbfLayer.setFeatureStyle(id , {
@@ -146,12 +152,12 @@ communes :[ {cp:35230 , c:3 } ,{cp:35890 , c:3 },{cp:35131 , c:3 },
     var fill = true ;
     var weight = 0.8 ;
     var fillcolor = 'green' ;
-    var fillOpacity = 0.3 ;
+    var fillOpacity = 0.1 ;
     if( zoom < 9 ) {
 
         alertes.deps.forEach((item, value) => {
-           
-            if( properties.DEP == item.dep ) {
+
+            if( properties.dep == item.dep ) {
                 if ( item.c  == 3 )  fillcolor ='red' ;
                 else fillcolor ='orange' ;
 
@@ -183,10 +189,15 @@ communes :[ {cp:35230 , c:3 } ,{cp:35890 , c:3 },{cp:35131 , c:3 },
     var fillcolor = '#e0e0d2' ;
     var fillOpacity = 0.5 ;
 
+
     alertes.communes.forEach((item, value) => {
 
-        if( properties.CP == item.cp ) {
+       
+        if( properties.insee == item.insee ) {
             if ( item.c  == 3 )  fillcolor ='red' ;
+            else if ( item.c  == 4 ) { fillcolor ='green' ;
+            
+                }
             else fillcolor ='orange' ;
             fillOpacity = 1 ;
         
@@ -194,10 +205,21 @@ communes :[ {cp:35230 , c:3 } ,{cp:35890 , c:3 },{cp:35131 , c:3 },
 
     } );
 
-  
+    
+    if(   noncouverte.list.indexOf(properties.insee  ) != -1  ) {
+        fillcolor ='gray' ;
+        fillOpacity = 1 ;
+        
+    }
+    
+    
+
+
 
     return {
-                        
+       
+              
+      //  dashArray: "30 10",                       
         fill: true,
         fillColor: fillcolor ,
         fillOpacity: fillOpacity,
@@ -207,7 +229,24 @@ communes :[ {cp:35230 , c:3 } ,{cp:35890 , c:3 },{cp:35131 , c:3 },
                 };
 
   }
+////////////////////////////////////////////////////////////////////////////////////////
+function styleEau(properties ,zoom) {
 
+    var fillcolor = '#A52A2A' ;
+   // var fillOpacity = 0.9 ;
+
+    return {
+        
+       //fill: false,
+       //fillColor: fillcolor ,
+       //fillOpacity: fillOpacity,
+        stroke: true,
+        color: "#A52A2A",
+        weight: 2.0
+                };
+
+  }
+///////////////////////////////////////////////////////////////////////////////////////
 
   function getVisibleTilesCoords(map)
   {
@@ -239,8 +278,8 @@ communes :[ {cp:35230 , c:3 } ,{cp:35890 , c:3 },{cp:35131 , c:3 },
           var yTile = Math.abs(y % max);
           
           tileCoordsContainer.push({ 'x':xTile, 'y':yTile });
-          console.log('info ' + x + ' ' + y);
-          console.log('tile ' + xTile + ' ' + yTile);
+          //console.log('info ' + x + ' ' + y);
+          //console.log('tile ' + xTile + ' ' + yTile);
         }
     }
     
