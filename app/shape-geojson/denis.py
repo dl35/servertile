@@ -29,8 +29,9 @@ depGeoJson = "/home/denis/workspaceNode/servertile/app/geojson/dep.geojson"
 depCsv = "/nas/dmap/dev/install/cdp_2009/src/deps.csv"
 
 couverture = "/nas/dev/apic-apocs/couverture-apic/couverture-fr.20190312.csv"
-noncouverte = "/home/denis/workspaceNode/servertile/app/map/noncouverte.json"
 
+noncouverte = "/home/denis/workspaceNode/servertile/app/map/noncouverte.json"
+noncouverte2 = "/home/denis/workspaceNode/servertile/app/map/noncouverte2.json"
 
 
 ####################################################################################################
@@ -70,6 +71,36 @@ def doCouverture():
     f.close()
     print ( res )
     return  res
+################################################################################################    
+# format dep -> insee
+def doCouverture2():
+    res = {}
+    with open( couverture , mode='r' ) as csvfile:
+        csv_reader = csv.DictReader( csvfile  , delimiter =';')
+        
+        for row in csv_reader:
+            v = dict( row )
+            dep = v['INSEE']
+            dep = dep[:2]
+
+            if v['COUVERTE'] == '0':
+                insee = v['INSEE'] #6 chars
+                if dep in res:
+                   l = res[dep] 
+                else :
+                    l = []   
+            
+                l.append( insee[2:5] ) 
+                res[dep] = l 
+               
+               
+    print ( str( len(res) ) + " communes non couverte ")    
+    with open( noncouverte2 , 'w') as f:
+         json.dump({'list': res }, f)
+
+    f.close()
+    print ( res )
+    return  res    
 #######################################################################################################
 def readDepCsv():
     res = {}
@@ -159,7 +190,7 @@ def traiteCommunes():
 #######################################################################################################
 
 #readDepCsv()
-doCouverture()
+doCouverture2()
 #traiteDepartements()
 #traiteCommunes()
 

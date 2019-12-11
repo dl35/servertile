@@ -17,9 +17,10 @@ communes :[ {insee:35206 , c:3 } ,{insee:35266 , c:3 },{insee:35066 , c:3 },
 ]
 };
 
-var noncouverte = [];
-$.getJSON("noncouverte.json", function(json) {
-    noncouverte = json ;
+var noncouverte = {};
+$.getJSON("noncouverte2.json", function(json) {
+    noncouverte = json.list ;
+    ///console.log( noncouverte ) ;
 });
 
  
@@ -48,7 +49,11 @@ $.getJSON("noncouverte.json", function(json) {
 
    //L.tileLayer('http://tile.openstreetmap.org/{z}/{x}/{y}.png').addTo(map);
   
-   L.tileLayer('https://{s}.basemaps.cartocdn.com/light_nolabels/{z}/{x}/{y}.png').addTo(map);
+   //L.tileLayer('https://{s}.basemaps.cartocdn.com/light_nolabels/{z}/{x}/{y}.png').addTo(map);
+
+   L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+    attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
+}).addTo(map);
   
   // console.log( map.getBounds() ) ;
   // console.log(getVisibleTilesCoords(map));
@@ -80,14 +85,30 @@ $.getJSON("noncouverte.json", function(json) {
 
     var popup = L.popup();
 
-    var tootltip = L.tooltip();
+    var tooltip = L.tooltip();
 
     var tilesPbfLayer = L.vectorGrid.protobuf(url, openmaptilesVectorTileOptions)
+        .on('mouseover'  , function(e) {
+          if( map.getZoom() < 9  ) {
+            if ( e.layer  )
+               // tooltip.setContent(e.layer.properties.nom);
+               alert('ok');
+          }
+        })
+        .on('mouseout'  , function(e) {
+          if( map.getZoom() < 9  ) {
+            if (e.layer  )
+                //tooltip.setContent('');
+                alert('ko');
+          }
+        })
+        
         .on('click', function(e) {
       
        if( map.getZoom() < 9  ) {
         if (e.layer  )
             popup.setContent(e.layer.properties.nom)
+           
         if (id != 0) {
             tilesPbfLayer.setFeatureStyle(id , {
                 fill: true,
@@ -112,6 +133,7 @@ $.getJSON("noncouverte.json", function(json) {
         // var v = (e.layer.properties.CP ) ? e.layer.properties.CP : e.layer.properties.NAME
         var v =  e.layer.properties.nom ;
         popup.setContent(v) ;
+   
         if (id != 0) {
             tilesPbfLayer.setFeatureStyle(id , {
                      
@@ -123,7 +145,7 @@ $.getJSON("noncouverte.json", function(json) {
                 weight: 0.8
             });
         }
-        id = e.layer.properties.CP ;
+        id = e.layer.properties.nom ;
                 setTimeout(function() {
                     tilesPbfLayer.setFeatureStyle(id, {
                         fillColor: 'orange' ,
@@ -144,15 +166,15 @@ $.getJSON("noncouverte.json", function(json) {
 
  tilesPbfLayer.bindPopup(popup);
 
-
+ tilesPbfLayer.bindTooltip(tooltip);
 
  //////style departements
   function styleDep(properties ,zoom) {
 
-    var fill = true ;
+    var fill = false ;
     var weight = 0.8 ;
-    var fillcolor = 'green' ;
-    var fillOpacity = 0.1 ;
+    var fillcolor = 'white' ;
+    var fillOpacity = 0 ;
     if( zoom < 9 ) {
 
         alertes.deps.forEach((item, value) => {
@@ -161,13 +183,11 @@ $.getJSON("noncouverte.json", function(json) {
                 if ( item.c  == 3 )  fillcolor ='red' ;
                 else fillcolor ='orange' ;
 
-                fillOpacity = 1 ;
+                fillOpacity = 0.6 ;
+                fill = true ;
             }
            
           })
-
-
-    
        
     }    
 
@@ -176,6 +196,7 @@ $.getJSON("noncouverte.json", function(json) {
            fill: fill,
            fillColor: fillcolor ,
            fillOpacity: fillOpacity,
+           opacity: 0.1,
            stroke: true,
            color: "#000000",
            weight: weight,
@@ -189,33 +210,47 @@ $.getJSON("noncouverte.json", function(json) {
     var fillcolor = '#e0e0d2' ;
     var fillOpacity = 0.5 ;
 
+    var isalerte = false ;
 
+  
     alertes.communes.forEach((item, value) => {
 
        
         if( properties.insee == item.insee ) {
-            if ( item.c  == 3 )  fillcolor ='red' ;
-            else if ( item.c  == 4 ) { fillcolor ='green' ;
-            
-                }
-            else fillcolor ='orange' ;
-            fillOpacity = 1 ;
-        
+            if ( item.c  == 3 )  { 
+               fillcolor ='red' ;
+              } else if ( item.c  == 4 ) { 
+               fillcolor ='green' ;
+               }
+            else { 
+                fillcolor ='orange' ; 
+              }
+
+            fillOpacity = 0.6 ;
+            isalerte = true ;
         }  
 
     } );
 
+    if( !isalerte )   {
+
+      var dep =   properties.insee.substring(0, 2) ;
     
-    if(   noncouverte.list.indexOf(properties.insee  ) != -1  ) {
-        fillcolor ='gray' ;
-        fillOpacity = 1 ;
+      if ( noncouverte[dep] !== undefined ) {
+        var l = noncouverte[dep] ;
+        var s =  properties.insee.substring(2,5) ;
         
+        if (   l.indexOf( s ) != -1  ) {
+          fillcolor ='gray' ;
+          fillOpacity = 0.4 ;
+     
+        } 
+         
+      } 
+
     }
+  
     
-    
-
-
-
     return {
        
               
