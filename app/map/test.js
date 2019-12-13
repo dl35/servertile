@@ -6,7 +6,17 @@
 /*fetch('/geojson/country')
   .then(res => res.json())
   .then(main);*/
+/*
 
+le fichier de couverture : 
+/meteo/shared/data/msp-apic/couverture
+
+les fichiers shape de datas 
+/meteo/shared/data/msp-apic/shp-data/fr
+
+les fichiers de données
+
+*/
 
 alertes = {
 deps :[ {dep:35 , c:3 } ,  {dep:31 , c:2 } ],
@@ -83,24 +93,37 @@ $.getJSON("noncouverte2.json", function(json) {
         
     };
 
-    var popup = L.popup();
+    var popup = L.popup({
+      className: "custompopup" 
+    });
 
-    var tooltip = L.tooltip();
+    var tooltip = L.tooltip({
+      position: 'left',
+      noWrap: true
+    });
 
     var tilesPbfLayer = L.vectorGrid.protobuf(url, openmaptilesVectorTileOptions)
         .on('mouseover'  , function(e) {
-          if( map.getZoom() < 9  ) {
+        //  if( map.getZoom() < 9  ) {
             if ( e.layer  )
-               // tooltip.setContent(e.layer.properties.nom);
-               alert('ok');
-          }
+                tooltip.setContent(e.layer.properties.nom);
+                tooltip.setTooltipContent(e.layer.properties.nom);
+                tooltip.setLatLng(e.latlng) ;
+                popup.setLatLng(e.latlng) ;
+                popup.setContent(e.layer.properties.nom);
+              ///  popup.setPopupContent(e.layer.properties.nom )
+               popup.openOn(map);
+               // tooltip.openOn(map);
+                // alert(e.layer.properties.nom);
+     //     }
         })
         .on('mouseout'  , function(e) {
-          if( map.getZoom() < 9  ) {
-            if (e.layer  )
-                //tooltip.setContent('');
-                alert('ko');
-          }
+        //  if( map.getZoom() < 9  ) {
+        //    if (e.layer  )
+                // tooltip.setContent('');
+                // alert('ko');
+       //         popup.closeOn(map);
+      //    }
         })
         
         .on('click', function(e) {
@@ -164,7 +187,7 @@ $.getJSON("noncouverte2.json", function(json) {
     }).addTo(map);;
   
 
- tilesPbfLayer.bindPopup(popup);
+ //tilesPbfLayer.bindPopup(popup);
 
  tilesPbfLayer.bindTooltip(tooltip);
 
