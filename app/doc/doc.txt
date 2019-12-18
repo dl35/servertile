@@ -1,0 +1,37 @@
+1-
+Copie des fichiers /meteo/web/map/  html et js
+copie de la carto  sur  /meteo/web/map/tiles/......
+
+
+LIEN 
+ln -s /meteo/web/map /var/www/html/map
+
+
+Installation de nginx 
+configuration port 65000
+
+Configuration haproxy 
+
+# nginx
+        acl is_nginx_url path_beg /tiles
+        use_backend nginx if is_nginx_url
+
+
+backend nginx
+
+        # url de test de presence
+        option httpchk GET / HTTP/1.0
+        http-check expect status 200
+
+        # serveurs
+        server 127.0.0.1 127.0.0.1:65000 check inter 30s weight 1
+
+
+Configuration nginx
+/etc/nginx/conf.d
+->  listen      65000;
+
+ location /tiles {
+                        root /meteo/web/map/;
+                        autoindex on;
+        }

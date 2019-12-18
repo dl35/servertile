@@ -1,0 +1,12 @@
+installation de nginx
+voir pour le paquet d'installation 
+configuration avec haproxy 
+configuration nginx ( fichiers statiques)
+
+
+
+1- voir pour les tuiles ( fond )
+2- voir pour faire polygone + tuile communes non couvertes
+
+4- attention pour les shapes remmettre les insee avec  6 caractères 
+3- revoir les fonction ajax 

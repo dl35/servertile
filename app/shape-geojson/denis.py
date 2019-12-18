@@ -9,6 +9,8 @@ from fiona.crs import to_string
 from collections import OrderedDict
 import pprint
 import os , csv , json
+from shapely.geometry import shape,mapping,Polygon
+from shapely.ops import cascaded_union
 
 def info(c):
    #pprint.pprint( c.driver )
@@ -22,6 +24,10 @@ def info(c):
 
 communeShape = "/nas/dmap/dev/install/cdp_2009/data/latlon/commune-a.shp"
 communesGeoJson = "/home/denis/workspaceNode/servertile/app/geojson/communes.geojson"
+nonCouvertesGeoJson = "/home/denis/workspaceNode/servertile/app/geojson/noncouvertes.geojson"
+
+filterNonCouvertesGeoJson = "/home/denis/workspaceNode/servertile/app/geojson/noncouvertesfilter.geojson"
+
 communesCsv = "/nas/dmap/dev/install/cdp_2009/src/communes.csv"
 
 depShape = "/nas/dmap/dev/install/cdp_2009/data/latlon/dep-a.shp"
@@ -100,7 +106,145 @@ def doCouverture2():
 
     f.close()
     print ( res )
-    return  res    
+    return  res  
+######################################################################################################
+def doCouvertureGeojson():
+    deleteFile( nonCouvertesGeoJson )
+    liste = []
+    with open( couverture , mode='r' ) as csvfile:
+        csv_reader = csv.DictReader( csvfile  , delimiter =';')
+        
+        for row in csv_reader:
+            v = dict( row )
+        
+            if v['COUVERTE'] == '0':
+                insee = v['INSEE'] #6 chars
+                liste.append( insee[0:5] ) 
+            
+    with fiona.open( communeShape ) as entree:
+        
+        print ( entree.schema )  
+        print ( entree.crs )    
+
+        oschema_prop = OrderedDict([('insee', 'str:5')])
+        oschema = {'geometry': entree.schema['geometry'] , 'properties': oschema_prop }
+
+        with fiona.open( nonCouvertesGeoJson ,'w', driver='GeoJSON' , crs= entree.crs ,schema= oschema ) as sortie:
+            
+            for elem in entree:
+                # conctruction du dictionnaire et sauvegarde 
+                geom = elem['geometry'] # puisque c'est la meme geometrie
+                prop = elem['properties'] 
+                #creduce = set_precision( geom['coordinates'], 8 ) 
+                #geom = {'type': geom['type'] , 'coordinates': creduce  }
+                insee = elem['properties']['INSEE']
+                if insee in liste:
+                    prop = {'insee': insee }
+                    sortie.write({'geometry':geom, 'properties': prop})
+                #sortie.write( elem )
+            
+    entree.close()
+    sortie.close()           
+               
+    
+    print ( liste )
+    return  liste        
+#######################################################################################################
+def intersectionNonCouverteGeojson():
+    deleteFile( filterNonCouvertesGeoJson )
+    listgeo =[]
+  
+    with fiona.open( nonCouvertesGeoJson ) as entree:
+            print("len: "+ str(len(entree)) )  
+  
+            i = 0  
+            for elem in entree:
+                print("i " + str(i) )
+                i=i+1
+                geom = elem['geometry'] 
+                p1 = shape(geom)
+                if not listgeo:
+                    listgeo.append(geom) 
+                    continue     
+
+                ok = False
+                for geo in listgeo:
+                    p2 = shape(geo)
+                    if p1.intersects(p2):
+                       p = p1.union(p2) 
+                       listgeo.remove( geo )
+                       listgeo.append(mapping(p))
+                       ok = True
+                       break
+                      
+                if not ok :
+                    listgeo.append(geom) 
+                    print("listgeo: "+ str(len(listgeo)) ) 
+           
+    oschema_prop = OrderedDict([('id', 'str')])
+    oschema = {'geometry': 'Polygon' , 'properties': oschema_prop }
+    wgs84 = fiona.crs.from_epsg(4326)
+
+
+    with fiona.open( filterNonCouvertesGeoJson ,'w', driver='GeoJSON' , crs= wgs84 ,schema= oschema ) as sortie:
+                i=0
+                for elem in listgeo:
+                    sortie.write({'geometry':elem , 'properties':{'id': str(i) }  })       
+                    i = i+1     
+    sortie.close()              
+
+    return
+#######################################################################################################
+# 
+def intersectionNonCouverteGeojson2():
+    deleteFile( filterNonCouvertesGeoJson )
+    listgeo =[]
+  
+    with fiona.open( nonCouvertesGeoJson ) as entree:
+            print("len: "+ str(len(entree)) )  
+  
+            i = 0  
+            for elem in entree:
+                print("i " + str(i) )
+                i=i+1
+                geom = elem['geometry'] 
+                p1 = shape(geom)
+                if not listgeo:
+                    listgeo.append(geom) 
+                    continue     
+
+                ok = False
+                for geo in listgeo:
+                    p2 = shape(geo)
+                    if p1.intersects(p2):
+                       p = p1.union(p2) 
+                       p = cascaded_union(p)
+                     
+                       listgeo.remove( geo )
+                     
+                     
+                       listgeo.append(mapping(p))
+                       ok = True
+                       break
+                      
+                if not ok :
+                    listgeo.append(geom) 
+                    print("listgeo: "+ str(len(listgeo)) ) 
+           
+    oschema_prop = OrderedDict([('id', 'str')])
+    oschema = {'geometry': 'Polygon' , 'properties': oschema_prop }
+    wgs84 = fiona.crs.from_epsg(4326)
+
+
+    with fiona.open( filterNonCouvertesGeoJson ,'w', driver='GeoJSON' , crs= wgs84 ,schema= oschema ) as sortie:
+                i=0
+                for elem in listgeo:
+                    sortie.write({'geometry':elem , 'properties':{'id': str(i) }  })       
+                    i = i+1     
+    sortie.close()              
+
+    return
+   
 #######################################################################################################
 def readDepCsv():
     res = {}
@@ -116,12 +260,15 @@ def readDepCsv():
    
     return  res
 #######################################################################################################
+    
+#######################################################################################################
 def traiteDepartements():
     deleteFile( depGeoJson )
     deps = readDepCsv()
     with fiona.open( depShape ) as entree:
         
         print ( entree.schema )   
+        print ( entree.crs )  
 
         oschema_prop = OrderedDict([('dep', 'str:2'), ('nom', 'str')])
         oschema = {'geometry': entree.schema['geometry'] , 'properties': oschema_prop }
@@ -190,12 +337,12 @@ def traiteCommunes():
 #######################################################################################################
 
 #readDepCsv()
-doCouverture2()
+#doCouverture2()
 #traiteDepartements()
 #traiteCommunes()
 
-
-
+#doCouvertureGeojson()
+intersectionNonCouverteGeojson()
 
 
 

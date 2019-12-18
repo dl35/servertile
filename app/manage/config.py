@@ -20,4 +20,4 @@ BOUNDS = [
     
 NUM_WORKERS = 4
 MIN_ZOOM = 6 
-MAX_ZOOM = 7
+MAX_ZOOM = 14
