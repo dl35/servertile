@@ -10,7 +10,7 @@ from collections import OrderedDict
 import pprint
 import os , csv , json
 from shapely.geometry import shape,mapping,Polygon
-from shapely.ops import cascaded_union
+from shapely.ops import unary_union,cascaded_union
 
 def info(c):
    #pprint.pprint( c.driver )
@@ -24,9 +24,9 @@ def info(c):
 
 communeShape = "/nas/dmap/dev/install/cdp_2009/data/latlon/commune-a.shp"
 communesGeoJson = "/home/denis/workspaceNode/servertile/app/geojson/communes.geojson"
-nonCouvertesGeoJson = "/home/denis/workspaceNode/servertile/app/geojson/noncouvertes.geojson"
+nonCouvertesGeoJson = "/home/dls/workspaceNode/servertile/app/geojson/noncouvertes.geojson"
 
-filterNonCouvertesGeoJson = "/home/denis/workspaceNode/servertile/app/geojson/noncouvertesfilter.geojson"
+filterNonCouvertesGeoJson = "/home/dls/workspaceNode/servertile/app/geojson/noncouvertesfilter.geojson"
 
 communesCsv = "/nas/dmap/dev/install/cdp_2009/src/communes.csv"
 
@@ -205,32 +205,38 @@ def intersectionNonCouverteGeojson2():
   
             i = 0  
             for elem in entree:
-                print("i " + str(i) )
+                insee = elem['properties']['insee']
+              
                 i=i+1
                 geom = elem['geometry'] 
                 p1 = shape(geom)
                 if not listgeo:
-                    listgeo.append(geom) 
+                    print("vide")
+                    listgeo.append(mapping(p1)) 
                     continue     
 
-                ok = False
+                #print( str("########"+str(len(listgeo)) ) )
                 for geo in listgeo:
                     p2 = shape(geo)
-                    if p1.intersects(p2):
-                       p = p1.union(p2) 
-                       p = cascaded_union(p)
-                     
-                       listgeo.remove( geo )
-                     
-                     
-                       listgeo.append(mapping(p))
-                       ok = True
-                       break
-                      
-                if not ok :
-                    listgeo.append(geom) 
-                    print("listgeo: "+ str(len(listgeo)) ) 
-           
+                    print( "type: "+ p2.geom_type)
+                    if p1.intersects(p2) :
+                       p1 = p1.union(p2)
+                       #p1 = cascaded_union(p2)
+                       listgeo.remove(geo)
+                    print ( insee)
+                    
+                                     
+                listgeo.append(mapping(p1))
+    listres=[]
+    for g1 in listgeo:
+        p1 = shape(g1)
+        for g2 in listgeo:
+            p2 = shape(g2)
+            if p1.intersects(p2) :
+                p1 = p1.union(p2)
+                listgeo.remove(g2)
+        listres.append( mapping(p1))
+
     oschema_prop = OrderedDict([('id', 'str')])
     oschema = {'geometry': 'Polygon' , 'properties': oschema_prop }
     wgs84 = fiona.crs.from_epsg(4326)
@@ -238,7 +244,7 @@ def intersectionNonCouverteGeojson2():
 
     with fiona.open( filterNonCouvertesGeoJson ,'w', driver='GeoJSON' , crs= wgs84 ,schema= oschema ) as sortie:
                 i=0
-                for elem in listgeo:
+                for elem in listres:
                     sortie.write({'geometry':elem , 'properties':{'id': str(i) }  })       
                     i = i+1     
     sortie.close()              
@@ -342,9 +348,9 @@ def traiteCommunes():
 #traiteCommunes()
 
 #doCouvertureGeojson()
-intersectionNonCouverteGeojson()
+#intersectionNonCouverteGeojson()
 
-
+intersectionNonCouverteGeojson2()
 
 # definition des fonctions de calcul
 # import math
