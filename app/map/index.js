@@ -181,6 +181,11 @@ function main() {
       communes: function (properties, zoom) {
         return styleCommunes(properties, zoom)
       },
+      // non surveillées
+      cnc: function (properties, zoom) {
+        return styleCnc(properties, zoom)
+      },
+
       /*   eau: function(properties ,zoom) {
                             return styleEau(properties ,zoom)
                                         } ,*/
@@ -255,7 +260,25 @@ function main() {
       icon: new L.Icon.Default()
     };
   }
+  /////////////////////////////////////////////////////////
+  //////communes non surveillées
+  function styleCnc(properties, zoom) {
 
+    var fill = true ;
+    var weight = 0.7 ;
+    var fillcolor = 'gray' ;
+    var fillOpacity = 0.5 ;
+    
+    return {
+    
+           fill: fill,
+           fillColor: fillcolor ,
+           fillOpacity: fillOpacity,
+           stroke: false,
+           color: "gay",
+           weight: weight
+       };
+  }
   /////////////////////////////////////////style communes
   function styleCommunes(properties, zoom) {
 

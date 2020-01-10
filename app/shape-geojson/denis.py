@@ -21,7 +21,6 @@ def info(c):
 
 
 
-
 communeShape = "/nas/dmap/dev/install/cdp_2009/data/latlon/commune-a.shp"
 communesGeoJson = "/home/denis/workspaceNode/servertile/app/geojson/communes.geojson"
 nonCouvertesGeoJson = "/home/denis/workspaceNode/servertile/app/geojson/noncouvertes.geojson"
@@ -199,38 +198,25 @@ def intersectionNonCouverteGeojson():
 def intersectionNonCouverteGeojson2():
     deleteFile( filterNonCouvertesGeoJson )
     listgeo =[]
+    
   
     with fiona.open( nonCouvertesGeoJson ) as entree:
             print("len: "+ str(len(entree)) )  
   
             i = 0  
+
             for elem in entree:
-                print("i " + str(i) )
+                #print("i " + str(i) )
                 i=i+1
                 geom = elem['geometry'] 
+                insee = elem['properties']['insee'] 
                 p1 = shape(geom)
-                if not listgeo:
-                    listgeo.append(geom) 
-                    continue     
+                listgeo.append(p1)
+    
 
-                ok = False
-                for geo in listgeo:
-                    p2 = shape(geo)
-                    if p1.intersects(p2):
-                       p = p1.union(p2) 
-                       p = cascaded_union(p)
-                     
-                       listgeo.remove( geo )
-                     
-                     
-                       listgeo.append(mapping(p))
-                       ok = True
-                       break
-                      
-                if not ok :
-                    listgeo.append(geom) 
-                    print("listgeo: "+ str(len(listgeo)) ) 
-           
+    listgeo = cascaded_union(listgeo) 
+
+
     oschema_prop = OrderedDict([('id', 'str')])
     oschema = {'geometry': 'Polygon' , 'properties': oschema_prop }
     wgs84 = fiona.crs.from_epsg(4326)
@@ -239,7 +225,7 @@ def intersectionNonCouverteGeojson2():
     with fiona.open( filterNonCouvertesGeoJson ,'w', driver='GeoJSON' , crs= wgs84 ,schema= oschema ) as sortie:
                 i=0
                 for elem in listgeo:
-                    sortie.write({'geometry':elem , 'properties':{'id': str(i) }  })       
+                    sortie.write({'geometry':mapping(elem) , 'properties':{'id': 'cnc' }  })       
                     i = i+1     
     sortie.close()              
 
@@ -342,7 +328,7 @@ def traiteCommunes():
 #traiteCommunes()
 
 #doCouvertureGeojson()
-intersectionNonCouverteGeojson()
+intersectionNonCouverteGeojson2()
 
 
 

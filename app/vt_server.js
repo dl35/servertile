@@ -25,8 +25,30 @@ const mercator = new SphericalMercator({ size: 256 });
 depGeoJson = './geojson/dep.geojson'
 communesGeoJson = './geojson/communes.geojson'
 
+polyCncJson = './geojson/noncouvertesfilter.geojson'
+
+
+
+
 const depGeo = JSON.parse(fs.readFileSync( depGeoJson ));
 const communesGeo = JSON.parse(fs.readFileSync( communesGeoJson ));
+const cncGeo = JSON.parse(fs.readFileSync( polyCncJson ));
+
+
+
+reunionGeoJson = './geojson/reunion.geojson'
+const reunionGeo= JSON.parse(fs.readFileSync( reunionGeoJson ));
+
+guadeloupeGeoJson = './geojson/guadeloupe.geojson'
+const guadeloupeGeo= JSON.parse(fs.readFileSync( guadeloupeGeoJson ));
+
+
+martiniqueGeoJson = './geojson/martinique.geojson'
+const martiniqueGeo= JSON.parse(fs.readFileSync( martiniqueGeoJson ));
+
+
+caledonieGeoJson = './geojson/caledonie.geojson'
+const caledonieGeo= JSON.parse(fs.readFileSync( caledonieGeoJson ));
 
 //const coursDeauGeo = JSON.parse(fs.readFileSync('cours_deau.geojson'));
 
@@ -78,6 +100,29 @@ solidChildren: false,
 
 
 });
+
+const cncTileIndex = geojsonvt(cncGeo, {
+  //  buffer: 0,
+  //  debug: 2,
+  solidChildren: false,
+    maxZoom: 13,  // max zoom to preserve detail on; can't be higher than 24
+    tolerance: 3, // simplification tolerance (higher means simpler)
+    extent: 4096, // tile extent (both width and height)
+    buffer: 64,   // tile buffer on each side
+    debug: 0,     // logging level (0 to disable, 1 or 2)
+    lineMetrics: true,
+  //  lineMetrics: true, // whether to enable line metrics tracking for LineString/MultiLineString features
+  //  promoteId: 'CP',    // name of a feature property to promote to feature.id. Cannot be used with `generateId`
+   //  generateId: true,  // whether to generate feature ids. Cannot be used with `promoteId`
+    indexMaxZoom: 4,       // max zoom in the initial tile index
+    indexMaxPoints: 10000 // max number of points per tile in the index
+  
+  
+  
+  });
+
+
+
 
 
 /*
@@ -132,6 +177,92 @@ const pointTileIndex = geojsonvt(pointGeoj, {
 
 });
 */
+
+
+
+const reunionTileIndex = geojsonvt(reunionGeo, {
+  //  buffer: 0,
+  //  debug: 2,
+  solidChildren: false,
+    maxZoom: 13,  // max zoom to preserve detail on; can't be higher than 24
+    tolerance: 3, // simplification tolerance (higher means simpler)
+    extent: 4096, // tile extent (both width and height)
+    buffer: 64,   // tile buffer on each side
+    debug: 0,     // logging level (0 to disable, 1 or 2)
+    lineMetrics: true,
+  //  lineMetrics: true, // whether to enable line metrics tracking for LineString/MultiLineString features
+  //  promoteId: 'CP',    // name of a feature property to promote to feature.id. Cannot be used with `generateId`
+   //  generateId: true,  // whether to generate feature ids. Cannot be used with `promoteId`
+    indexMaxZoom: 4,       // max zoom in the initial tile index
+    indexMaxPoints: 10000 // max number of points per tile in the index
+  
+  
+  
+  });
+
+
+  const guadeloupeTileIndex = geojsonvt(guadeloupeGeo, {
+    //  buffer: 0,
+    //  debug: 2,
+    solidChildren: false,
+      maxZoom: 13,  // max zoom to preserve detail on; can't be higher than 24
+      tolerance: 3, // simplification tolerance (higher means simpler)
+      extent: 4096, // tile extent (both width and height)
+      buffer: 64,   // tile buffer on each side
+      debug: 0,     // logging level (0 to disable, 1 or 2)
+      lineMetrics: true,
+    //  lineMetrics: true, // whether to enable line metrics tracking for LineString/MultiLineString features
+    //  promoteId: 'CP',    // name of a feature property to promote to feature.id. Cannot be used with `generateId`
+     //  generateId: true,  // whether to generate feature ids. Cannot be used with `promoteId`
+      indexMaxZoom: 4,       // max zoom in the initial tile index
+      indexMaxPoints: 10000 // max number of points per tile in the index
+    
+    
+    
+    });
+
+
+    const martiniqueTileIndex = geojsonvt(martiniqueGeo , {
+      //  buffer: 0,
+      //  debug: 2,
+      solidChildren: false,
+        maxZoom: 13,  // max zoom to preserve detail on; can't be higher than 24
+        tolerance: 3, // simplification tolerance (higher means simpler)
+        extent: 4096, // tile extent (both width and height)
+        buffer: 64,   // tile buffer on each side
+        debug: 0,     // logging level (0 to disable, 1 or 2)
+        lineMetrics: true,
+      //  lineMetrics: true, // whether to enable line metrics tracking for LineString/MultiLineString features
+      //  promoteId: 'CP',    // name of a feature property to promote to feature.id. Cannot be used with `generateId`
+       //  generateId: true,  // whether to generate feature ids. Cannot be used with `promoteId`
+        indexMaxZoom: 4,       // max zoom in the initial tile index
+        indexMaxPoints: 10000 // max number of points per tile in the index
+      
+      
+      
+      });
+
+
+      const caledonieTileIndex = geojsonvt(caledonieGeo , {
+        //  buffer: 0,
+        //  debug: 2,
+        solidChildren: false,
+          maxZoom: 13,  // max zoom to preserve detail on; can't be higher than 24
+          tolerance: 3, // simplification tolerance (higher means simpler)
+          extent: 4096, // tile extent (both width and height)
+          buffer: 64,   // tile buffer on each side
+          debug: 0,     // logging level (0 to disable, 1 or 2)
+          lineMetrics: true,
+        //  lineMetrics: true, // whether to enable line metrics tracking for LineString/MultiLineString features
+        //  promoteId: 'CP',    // name of a feature property to promote to feature.id. Cannot be used with `generateId`
+         //  generateId: true,  // whether to generate feature ids. Cannot be used with `promoteId`
+          indexMaxZoom: 4,       // max zoom in the initial tile index
+          indexMaxPoints: 10000 // max number of points per tile in the index
+        
+        
+        
+        });
+
 // returned when empty tiles are requested
 const emptyFeatCollection = featureCollection([]);
 
@@ -160,13 +291,14 @@ router.get('/:z/:x/:y', (req, res) => {
   if (  z > 10 ) {
     const communes = communesTileIndex.getTile(z, x, y) || emptyFeatCollection;
     //const eau = eauTileIndex.getTile(z, x, y) || emptyFeatCollection;
-    buff = vtpbf.fromGeojsonVt(  {'dep': dep  , 'communes': communes  } );
+    buff = vtpbf.fromGeojsonVt(  {'dep': dep  , 'communes': communes } );
   } else  if ( z >= 9 ) {
     const communes = communesTileIndex.getTile(z, x, y) || emptyFeatCollection;
     buff = vtpbf.fromGeojsonVt(  {'dep': dep  , 'communes': communes } );
   } else {
  
-    buff = vtpbf.fromGeojsonVt( {'dep': dep  });
+    const cnc = cncTileIndex.getTile(z, x, y) || emptyFeatCollection;
+    buff = vtpbf.fromGeojsonVt( {'dep': dep  , 'cnc': cnc   });
   }
 
 //  const points = pointTileIndex.getTile(z, x, y) || emptyFeatCollection;
@@ -176,6 +308,88 @@ router.get('/:z/:x/:y', (req, res) => {
 });
 
 
+///reunion 
+///////////////////////////////////////////////////////////////////
+
+
+router.get('/re/:z/:x/:y', (req, res) => {
+  if (req.get('If-Modified-Since')) {
+    return res.status(304).send();
+  }
+  const [x, y, z] = [+req.params.x, +req.params.y, +req.params.z];
+  console.log( x , y ,z );
+  
+  var buff = null;
+  const re = reunionTileIndex.getTile(z, x, y) || emptyFeatCollection;
+  buff = vtpbf.fromGeojsonVt( {'communes': re  });
+ 
+
+//  const points = pointTileIndex.getTile(z, x, y) || emptyFeatCollection;
+ 
+
+  res.status(200).send(buff);
+});
+
+///////////////////////////////////////////////////////////////////
+
+router.get('/ga/:z/:x/:y', (req, res) => {
+  if (req.get('If-Modified-Since')) {
+    return res.status(304).send();
+  }
+  const [x, y, z] = [+req.params.x, +req.params.y, +req.params.z];
+  console.log( x , y ,z );
+  
+  var buff = null;
+  const ga = guadeloupeTileIndex.getTile(z, x, y) || emptyFeatCollection;
+  buff = vtpbf.fromGeojsonVt( {'communes': ga  });
+ 
+
+//  const points = pointTileIndex.getTile(z, x, y) || emptyFeatCollection;
+ 
+
+  res.status(200).send(buff);
+});
+////////////////////////////////////////////////////////////////////
+router.get('/ma/:z/:x/:y', (req, res) => {
+  if (req.get('If-Modified-Since')) {
+    return res.status(304).send();
+  }
+  const [x, y, z] = [+req.params.x, +req.params.y, +req.params.z];
+  console.log( x , y ,z );
+  
+  var buff = null;
+  const ga = martiniqueTileIndex.getTile(z, x, y) || emptyFeatCollection;
+  buff = vtpbf.fromGeojsonVt( {'communes': ga  });
+ 
+
+//  const points = pointTileIndex.getTile(z, x, y) || emptyFeatCollection;
+ 
+
+  res.status(200).send(buff);
+});
+
+///////////////////////////////////////////////////////////////////////
+router.get('/ca/:z/:x/:y', (req, res) => {
+  if (req.get('If-Modified-Since')) {
+    return res.status(304).send();
+  }
+  const [x, y, z] = [+req.params.x, +req.params.y, +req.params.z];
+  console.log( x , y ,z );
+  
+  var buff = null;
+  const ga = caledonieTileIndex.getTile(z, x, y) || emptyFeatCollection;
+  buff = vtpbf.fromGeojsonVt( {'communes': ga  });
+ 
+
+//  const points = pointTileIndex.getTile(z, x, y) || emptyFeatCollection;
+ 
+
+  res.status(200).send(buff);
+});
+
+
+
+///////////////////////////////////////////////////////////////////////
 router.get('/store/:z/:x/:y', (req, res) => {
   const [x, y, z] = [+req.params.x, +req.params.y, +req.params.z];
   const dep = depTileIndex.getTile(z, x, y) || emptyFeatCollection;
@@ -184,8 +398,9 @@ router.get('/store/:z/:x/:y', (req, res) => {
     const communes = communesTileIndex.getTile(z, x, y) || emptyFeatCollection;
     buff = vtpbf.fromGeojsonVt(  {'dep': dep  , 'communes': communes   } );
   } else {
- 
-    buff = vtpbf.fromGeojsonVt( {'dep': dep  });
+    const cnc = cncTileIndex.getTile(z, x, y) || emptyFeatCollection;
+    buff = vtpbf.fromGeojsonVt( {'dep': dep  , 'cnc': cnc   });
+    
   }
 
 //  const points = pointTileIndex.getTile(z, x, y) || emptyFeatCollection;
