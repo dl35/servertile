@@ -1,22 +1,3 @@
-/**
- *
- */
-//http://www.programmersought.com/article/4311390269/
-
-/*fetch('/geojson/country')
-  .then(res => res.json())
-  .then(main);*/
-/*
-
-le fichier de couverture : 
-/meteo/shared/data/msp-apic/couverture
-
-les fichiers shape de datas 
-/meteo/shared/data/msp-apic/shp-data/fr
-
-les fichiers de données
-
-*/
 
 
 var reseaux = [
@@ -97,15 +78,6 @@ var reseaux = [
    
    
    
-    // id = 0;
-    // idc = 0 ;
-   //  main();
-   
-   //$extend = "-5.3, 41.1, 10.0, 51.2";
-   //$minzoom = 6;
-   //$center = "-3.5, 48.2";
-   
-   
    
      function main() {
    
@@ -150,8 +122,12 @@ var reseaux = [
        };
    
        var popup = L.popup({
-         className: "custompopup" 
-       });
+        className: 'cpopup' ,
+        autoPan :false,
+        closeButton:false,
+        closeOnClick:true,
+        maxWidth:200,
+             });
    
    
    
@@ -163,104 +139,20 @@ var reseaux = [
                if ( e.layer  )
                    popup.setLatLng(e.latlng) ;
                    popup.setContent(e.layer.properties.nom);
-                  popup.openOn(map);
+                   popup.openOn(map);
              } else {
                map.closePopup();
         
              }
            }).addTo(map);
-       /*    .on('mouseout'  , function(e) {
-           })*/
-           
-        /*   .on('click', function(e) {
-         
-          if( map.getZoom() < 9  ) {
-           if (e.layer  )
-               popup.setContent(e.layer.properties.nom)
-              
-           if (id != 0) {
-               tilesPbfLayer.setFeatureStyle(id , {
-                   fill: true,
-                   fillColor: 'red' ,
-                   fillOpacity: 0.1,
-                   stroke: true,
-                   color: "#595959",
-                   weight: 0.1
-               });
-           }
-           id = e.layer.properties.dep ;
-   
-                   setTimeout(function() {
-                       tilesPbfLayer.setFeatureStyle(id, {
-                           fillColor: 'green' ,
-                   weight: .5,
-                       }, 100);
-                   });
-   
-          } else {
-   
-           // var v = (e.layer.properties.CP ) ? e.layer.properties.CP : e.layer.properties.NAME
-           var v =  e.layer.properties.nom ;
-           popup.setContent(v) ;
       
-           if (id != 0) {
-               tilesPbfLayer.setFeatureStyle(id , {
-                        
-                   fill: true,
-                   fillColor: 'gray' ,
-                   fillOpacity: 0.1,
-                   stroke: true,
-                   color: "#595959",
-                   weight: 0.8
-               });
-           }
-           id = e.layer.properties.nom ;
-                   setTimeout(function() {
-                       tilesPbfLayer.setFeatureStyle(id, {
-                           fillColor: 'orange' ,
-                   weight: .5,
-                       }, 100);
-                   });
-   
-   
-   
-          }
-   
-          
-                   
-   
-   
-       }).addTo(map);;*/
-     
-   
-    tilesPbfLayer.bindPopup(popup);
-   
     
    /////////////////////////////////////////////////////////////////////
    // rose = #ff00de;
    // fushia = #8300ff
    /////////////////////////////////////////////////////style departements
    
-    /////////////////////////////////////////////////////style departements
-    function styleCnc(properties ,zoom) {
    
-      var fill = true ;
-      var weight = 0.7 ;
-      var fillcolor = 'gray' ;
-      var fillOpacity = 0.5 ;
-      
-      console.log( zoom )
-
-         return {
-             // fill: true is needed
-             fill: fill,
-             fillColor: fillcolor ,
-             fillOpacity: fillOpacity,
-             stroke: false,
-             color: "gay",
-             weight: weight
-         };
-    }    
      /////////////////////////////////////////style communes
      function styleCommunes(properties ,zoom) {
    
@@ -286,24 +178,7 @@ var reseaux = [
         }  
 
     } );
-   
-     /*  if( !isalerte )   {
-   
-         var dep =   properties.insee.substring(0, 2) ;
-       
-         if ( noncouverte[dep] !== undefined ) {
-           var l = noncouverte[dep] ;
-           var s =  properties.insee.substring(2,5) ;
-           
-           if (   l.indexOf( s ) != -1  ) {
-             fillcolor ='gray' ;
-             fillOpacity = 0.4 ;
-        
-           } 
-            
-         } 
-   
-       }*/
+ 
      
        
        return {
@@ -319,64 +194,7 @@ var reseaux = [
                    };
    
      }
-   ////////////////////////////////////////////////////////////////////////////////////////
-   function styleEau(properties ,zoom) {
-   
-       var fillcolor = '#A52A2A' ;
-      // var fillOpacity = 0.9 ;
-   
-       return {
-           
-          //fill: false,
-          //fillColor: fillcolor ,
-          //fillOpacity: fillOpacity,
-           stroke: true,
-           color: "#A52A2A",
-           weight: 2.0
-                   };
-   
-     }
-   ///////////////////////////////////////////////////////////////////////////////////////
-   
-     function getVisibleTilesCoords(map)
-     {
-       
-       // get bounds, zoom and tileSize        
-       var bounds = map.getPixelBounds();
-       var zoom = map.getZoom();
-       var tileSize = 256;
-       var tileCoordsContainer = [];
-   
-   
-       // get NorthWest and SouthEast points
-       var nwTilePoint = new L.Point(Math.floor(bounds.min.x / tileSize),
-           Math.floor(bounds.min.y / tileSize));
-   
-       var seTilePoint = new L.Point(Math.floor(bounds.max.x / tileSize),
-           Math.floor(bounds.max.y / tileSize));
-   
-       // get max number of tiles in this zoom level
-       var max = map.options.crs.scale(zoom) / tileSize; 
-   
-       // enumerate visible tiles 
-       for (var x = nwTilePoint.x; x <= seTilePoint.x; x++) 
-       {
-          for (var y = nwTilePoint.y; y <= seTilePoint.y; y++) 
-          {
-   
-             var xTile = Math.abs(x % max);
-             var yTile = Math.abs(y % max);
-             
-             tileCoordsContainer.push({ 'x':xTile, 'y':yTile });
-             //console.log('info ' + x + ' ' + y);
-             //console.log('tile ' + xTile + ' ' + yTile);
-           }
-       }
-       
-       return tileCoordsContainer;
-       
-     };
-   
+ 
    
    }
    

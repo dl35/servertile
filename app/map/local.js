@@ -78,18 +78,12 @@ var reseaux = [
    var noncouverte = {};
    $.getJSON("noncouverte2.json", function(json) {
        noncouverte = json.list ;
-     //  console.log( noncouverte ) ;
    });
    
  
-   
-   
+     
  
    main();
-   
-   
- 
-   
    
    
    var tilesPbfLayer ;
@@ -99,14 +93,6 @@ var reseaux = [
    }
    
    
-   
-    // id = 0;
-    // idc = 0 ;
-   //  main();
-   
-   //$extend = "-5.3, 41.1, 10.0, 51.2";
-   //$minzoom = 6;
-   //$center = "-3.5, 48.2";
    
    
    
@@ -136,6 +122,7 @@ var reseaux = [
      // console.log(getVisibleTilesCoords(map));
    
        const url = '/{z}/{x}/{y}?pbf';
+       const url2 = '/cnc/{z}/{x}/{y}?pbf';
      //  const url = '/pbf/{z}/{x}/{y}.pbf';
        
       var openmaptilesVectorTileOptions = {
@@ -147,9 +134,9 @@ var reseaux = [
                 communes: function(properties ,zoom) {
                    return styleCommunes(properties ,zoom)
                    } ,   
-                cnc: function(properties ,zoom) {
+            /*    cnc: function(properties ,zoom) {
                     return styleCnc(properties ,zoom)
-                    } ,                     
+                    } , */                    
              /*   eau: function(properties ,zoom) {
                                    return styleEau(properties ,zoom)
                                                } ,*/
@@ -161,8 +148,32 @@ var reseaux = [
            
        };
    
+       var cncVectorTileOptions = {
+        rendererFactory: L.canvas.tile,
+        vectorTileLayerStyles: {
+            cnc: function(properties ,zoom) {
+                return styleCnc(properties ,zoom)
+                }                     
+       },
+       interactive: true,
+       minZoom: 6,
+       maxZoom: 10,
+       getFeatureId: f => {  f.properties.id  } ,
+       
+   };
+
+
+
+
+
        var popup = L.popup({
-         className: "custompopup" 
+         className: 'cpopup' ,
+         autoPan :false,
+         closeButton:false,
+         closeOnClick:true,
+         maxWidth:200,
+        
+
        });
    
    
@@ -172,81 +183,32 @@ var reseaux = [
         tilesPbfLayer = L.vectorGrid.protobuf(url, openmaptilesVectorTileOptions)
            .on('mouseover'  , function(e) {
              if( map.getZoom() >= 10  ) {
-               if ( e.layer  )
-                   popup.setLatLng(e.latlng) ;
-                   popup.setContent(e.layer.properties.nom);
-                  popup.openOn(map);
+               if ( e.layer  ) {
+                popup.setLatLng(e.latlng) ;
+                popup.setContent(e.layer.properties.nom);
+                popup.openOn(map);
+               }
+                 
              } else {
                map.closePopup();
         
              }
            }).addTo(map);
-       /*    .on('mouseout'  , function(e) {
-           })*/
-           
-        /*   .on('click', function(e) {
-         
-          if( map.getZoom() < 9  ) {
-           if (e.layer  )
-               popup.setContent(e.layer.properties.nom)
-              
-           if (id != 0) {
-               tilesPbfLayer.setFeatureStyle(id , {
-                   fill: true,
-                   fillColor: 'red' ,
-                   fillOpacity: 0.1,
-                   stroke: true,
-                   color: "#595959",
-                   weight: 0.1
-               });
-           }
-           id = e.layer.properties.dep ;
-   
-                   setTimeout(function() {
-                       tilesPbfLayer.setFeatureStyle(id, {
-                           fillColor: 'green' ,
-                   weight: .5,
-                       }, 100);
-                   });
-   
-          } else {
-   
-           // var v = (e.layer.properties.CP ) ? e.layer.properties.CP : e.layer.properties.NAME
-           var v =  e.layer.properties.nom ;
-           popup.setContent(v) ;
-      
-           if (id != 0) {
-               tilesPbfLayer.setFeatureStyle(id , {
-                        
-                   fill: true,
-                   fillColor: 'gray' ,
-                   fillOpacity: 0.1,
-                   stroke: true,
-                   color: "#595959",
-                   weight: 0.8
-               });
-           }
-           id = e.layer.properties.nom ;
-                   setTimeout(function() {
-                       tilesPbfLayer.setFeatureStyle(id, {
-                           fillColor: 'orange' ,
-                   weight: .5,
-                       }, 100);
-                   });
-   
-   
-   
-          }
-   
-          
-                   
-   
-   
-       }).addTo(map);;*/
      
-   
-    tilesPbfLayer.bindPopup(popup);
-   
+           cncPbfLayer = L.vectorGrid.protobuf(url2, cncVectorTileOptions).addTo(map);
+          /* .on('mouseover'  , function(e) {
+             if( map.getZoom() < 10  ) {
+               if ( e.layer  ) {
+                popup.setLatLng(e.latlng) ;
+                popup.setContent('communes non couvertes');
+                popup.openOn(map);
+               }
+                 
+             } else {
+               map.closePopup();
+        
+             }
+           } ).addTo(map);*/
     
    /////////////////////////////////////////////////////////////////////
    // rose = #ff00de;
@@ -276,7 +238,6 @@ var reseaux = [
        }    
    
           return {
-              // fill: true is needed
               fill: fill,
               fillColor: fillcolor ,
               fillOpacity: fillOpacity,
@@ -294,11 +255,8 @@ var reseaux = [
       var weight = 0.7 ;
       var fillcolor = 'gray' ;
       var fillOpacity = 0.5 ;
-      
-      console.log( zoom )
-
-         return {
-             // fill: true is needed
+           return {
+        
              fill: fill,
              fillColor: fillcolor ,
              fillOpacity: fillOpacity,
@@ -317,10 +275,7 @@ var reseaux = [
    
      
        alertes.communes.forEach((item, value) => {
-
-
-     //  console.log( properties , item )
-        if( properties.insee == item.id ) {
+      if( properties.insee == item.id ) {
             if ( item.c  == 2 )  { 
                fillcolor = '#ff00de' ;
               } else if ( item.c  == 1 ) { 

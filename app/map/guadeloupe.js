@@ -1,22 +1,4 @@
-/**
- *
- */
-//http://www.programmersought.com/article/4311390269/
 
-/*fetch('/geojson/country')
-  .then(res => res.json())
-  .then(main);*/
-/*
-
-le fichier de couverture : 
-/meteo/shared/data/msp-apic/couverture
-
-les fichiers shape de datas 
-/meteo/shared/data/msp-apic/shp-data/fr
-
-les fichiers de données
-
-*/
 
 
 var reseaux = [
@@ -79,14 +61,9 @@ var reseaux = [
    });
    
  
-   
-   
+      
  
    main();
-   
-   
- 
-   
    
    
    var tilesPbfLayer ;
@@ -149,9 +126,16 @@ var reseaux = [
            
        };
    
+
        var popup = L.popup({
-         className: "custompopup" 
-       });
+        className: 'cpopup' ,
+        autoPan :false,
+        closeButton:false,
+        closeOnClick:true,
+        maxWidth:200,
+       
+
+      });
    
    
    
@@ -169,72 +153,7 @@ var reseaux = [
         
              }
            }).addTo(map);
-       /*    .on('mouseout'  , function(e) {
-           })*/
-           
-        /*   .on('click', function(e) {
-         
-          if( map.getZoom() < 9  ) {
-           if (e.layer  )
-               popup.setContent(e.layer.properties.nom)
-              
-           if (id != 0) {
-               tilesPbfLayer.setFeatureStyle(id , {
-                   fill: true,
-                   fillColor: 'red' ,
-                   fillOpacity: 0.1,
-                   stroke: true,
-                   color: "#595959",
-                   weight: 0.1
-               });
-           }
-           id = e.layer.properties.dep ;
-   
-                   setTimeout(function() {
-                       tilesPbfLayer.setFeatureStyle(id, {
-                           fillColor: 'green' ,
-                   weight: .5,
-                       }, 100);
-                   });
-   
-          } else {
-   
-           // var v = (e.layer.properties.CP ) ? e.layer.properties.CP : e.layer.properties.NAME
-           var v =  e.layer.properties.nom ;
-           popup.setContent(v) ;
       
-           if (id != 0) {
-               tilesPbfLayer.setFeatureStyle(id , {
-                        
-                   fill: true,
-                   fillColor: 'gray' ,
-                   fillOpacity: 0.1,
-                   stroke: true,
-                   color: "#595959",
-                   weight: 0.8
-               });
-           }
-           id = e.layer.properties.nom ;
-                   setTimeout(function() {
-                       tilesPbfLayer.setFeatureStyle(id, {
-                           fillColor: 'orange' ,
-                   weight: .5,
-                       }, 100);
-                   });
-   
-   
-   
-          }
-   
-          
-                   
-   
-   
-       }).addTo(map);;*/
-     
-   
-    tilesPbfLayer.bindPopup(popup);
-   
     
    /////////////////////////////////////////////////////////////////////
    // rose = #ff00de;

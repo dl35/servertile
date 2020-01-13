@@ -298,7 +298,37 @@ router.get('/:z/:x/:y', (req, res) => {
   } else {
  
     const cnc = cncTileIndex.getTile(z, x, y) || emptyFeatCollection;
-    buff = vtpbf.fromGeojsonVt( {'dep': dep  , 'cnc': cnc   });
+    // buff = vtpbf.fromGeojsonVt( {'dep': dep  , 'cnc': cnc   });
+    buff = vtpbf.fromGeojsonVt( {'dep': dep   });
+    
+  }
+
+//  const points = pointTileIndex.getTile(z, x, y) || emptyFeatCollection;
+  
+
+  res.status(200).send(buff);
+});
+
+
+////////////////////////////////////////////////////////////////////////////////
+router.get('/cnc/:z/:x/:y', (req, res) => {
+  if (req.get('If-Modified-Since')) {
+    return res.status(304).send();
+  }
+  const [x, y, z] = [+req.params.x, +req.params.y, +req.params.z];
+  //console.log( x , y ,z );
+ 
+  var buff = null;
+
+  
+
+  if (  z < 10 ) {
+    const cnc = cncTileIndex.getTile(z, x, y) || emptyFeatCollection;
+    console.log("cnc ", x , y ,z  ) ;
+    buff = vtpbf.fromGeojsonVt( { 'cnc': cnc   });
+  } else {
+    const cnc = emptyFeatCollection;
+    buff = vtpbf.fromGeojsonVt( { 'cnc': cnc   });
   }
 
 //  const points = pointTileIndex.getTile(z, x, y) || emptyFeatCollection;
