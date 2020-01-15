@@ -2,6 +2,11 @@ import requests
 import time
 from doxyz import dotiles
 from config import BOUNDS,MAX_ZOOM,MIN_ZOOM,NUM_WORKERS
+from config import BOUNDS_RE,MAX_ZOOM_RE,MIN_ZOOM_RE
+from config import BOUNDS_GA,MAX_ZOOM_GA,MIN_ZOOM_GA
+from config import BOUNDS_MA,MAX_ZOOM_MA,MIN_ZOOM_MA
+from config import BOUNDS_NC,MAX_ZOOM_NC,MIN_ZOOM_NC
+from config import MAX_ZOOM_CNC,MIN_ZOOM_CNC
 from threading import Thread
 import sys
 
@@ -13,10 +18,19 @@ import time
 
 
 
+def testOrigin(origin) :
+  lori= ["fr","re","ga","ma","nc","cnc"]
+  if (origin in lori):
+      return True
+  else:
+      return False    
 
-def appendTaskQueries( tiles ):
+
+
+
+def appendTaskQueries( tiles , origin ):
     for t in tiles:
-            query =  'http://127.0.0.1:6300/store/'+str(t['z'])+'/'+str(t['x'])+'/'+str(t['y'])
+            query =  'http://127.0.0.1:6300/store/'+origin+'/'+str(t['z'])+'/'+str(t['x'])+'/'+str(t['y'])
             task_queue.put( query ) 
 
 def runQuery( query ):
@@ -37,17 +51,35 @@ def worker():
 
 
 ######################################################################################################
+if len(sys.argv) < 2:
+    print("Veuillez saisir un argument , fr | re | ga | ma | nc ")
+    sys.exit()
+origin = sys.argv[1]
+print( 'origin is ' + origin )
 
+if not testOrigin( origin):
+   print("origin not valid")
+   sys.exit()
+if origin == 'fr':
+    tiles = dotiles(BOUNDS, MIN_ZOOM , MAX_ZOOM )
+elif  origin == 're':
+    tiles = dotiles(BOUNDS_RE, MIN_ZOOM_RE , MAX_ZOOM_RE )
+elif  origin == 'ga':
+    tiles = dotiles(BOUNDS_GA, MIN_ZOOM_GA , MAX_ZOOM_GA )
+elif  origin == 'ma':
+    tiles = dotiles(BOUNDS_MA, MIN_ZOOM_MA , MAX_ZOOM_MA )
+elif  origin == 'nc':
+    tiles = dotiles(BOUNDS_NC, MIN_ZOOM_NC , MAX_ZOOM_NC )
+elif  origin == 'cnc':
+    # communes on couvertes
+    tiles = dotiles(BOUNDS, MIN_ZOOM_CNC , MAX_ZOOM_CNC )
 
-tiles = dotiles(BOUNDS, MIN_ZOOM , MAX_ZOOM )
-print( tiles )
-#sys.exit()
 
 task_queue = queue.Queue()
 
 
 
-appendTaskQueries (tiles)
+appendTaskQueries (tiles , origin )
 start_time = time.time()
          
 # Create the worker threads

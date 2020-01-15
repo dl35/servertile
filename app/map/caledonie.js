@@ -114,7 +114,7 @@ var reseaux = [
      // console.log( map.getBounds() ) ;
      // console.log(getVisibleTilesCoords(map));
    
-       const url = '/ca/{z}/{x}/{y}?pbf';
+       const url = '/nc/{z}/{x}/{y}?pbf';
      //  const url = '/pbf/{z}/{x}/{y}.pbf';
        
       var openmaptilesVectorTileOptions = {

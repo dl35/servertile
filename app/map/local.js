@@ -100,12 +100,12 @@ var reseaux = [
    
        const map = L.map('map', {
          center: {
-           lat: 46.8,
-           lng: 2
+           lat: 46.495,
+           lng: 2.207
          },
          zoom: 6,
          minZoom: 6,
-         maxZoom: 13,
+         maxZoom: 12,
          preferCanvas: true,
        });
      
@@ -121,8 +121,9 @@ var reseaux = [
      // console.log( map.getBounds() ) ;
      // console.log(getVisibleTilesCoords(map));
    
-       const url = '/{z}/{x}/{y}?pbf';
+       const url = '/fr/{z}/{x}/{y}?pbf';
        const url2 = '/cnc/{z}/{x}/{y}?pbf';
+      // const url2 = '/apoc/couvfr/{z}/{x}/{y}?pbf';
      //  const url = '/pbf/{z}/{x}/{y}.pbf';
        
       var openmaptilesVectorTileOptions = {
@@ -137,9 +138,14 @@ var reseaux = [
             /*    cnc: function(properties ,zoom) {
                     return styleCnc(properties ,zoom)
                     } , */                    
-             /*   eau: function(properties ,zoom) {
-                                   return styleEau(properties ,zoom)
-                                               } ,*/
+                tr: function(properties ,zoom) {
+                    return styleTroncons(properties ,zoom)
+                                               } ,
+                exu: function(properties ,zoom) {
+                     return styleExutoires(properties ,zoom)
+                                               } 
+             
+
            },
            interactive: true,
            minZoom: 6,
@@ -261,7 +267,7 @@ var reseaux = [
              fillColor: fillcolor ,
              fillOpacity: fillOpacity,
              stroke: false,
-             color: "gay",
+             color: "gray",
              weight: weight
          };
     }    
@@ -321,7 +327,7 @@ var reseaux = [
    
      }
    ////////////////////////////////////////////////////////////////////////////////////////
-   function styleEau(properties ,zoom) {
+   function styleTroncons(properties ,zoom) {
    
        var fillcolor = '#A52A2A' ;
       // var fillOpacity = 0.9 ;
@@ -337,6 +343,30 @@ var reseaux = [
                    };
    
      }
+        ////////////////////////////////////////////////////////////////////////////////////////
+   function styleExutoires(properties ,zoom) {
+   
+    var fillcolor = '#A52A2A' ;
+   // var fillOpacity = 0.9 ;
+    var radius = 4 ;
+    if( zoom == 10 ) {
+        radius = 3 ;
+    }
+
+
+    return {
+        
+          
+        radius : radius,
+        fill: true,
+        fillColor: 'red' ,
+        fillOpacity: 0.7,
+        stroke: true,
+        color: 'black',
+        weight: 1
+                };
+
+  }
    ///////////////////////////////////////////////////////////////////////////////////////
    
      function getVisibleTilesCoords(map)

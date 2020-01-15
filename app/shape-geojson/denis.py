@@ -206,52 +206,20 @@ def intersectionNonCouverteGeojson2():
             i = 0  
 
             for elem in entree:
-<<<<<<< HEAD
-                #print("i " + str(i) )
-=======
-                insee = elem['properties']['insee']
-              
->>>>>>> 045e220d107f2eb405d761823304798bbbefb736
+               #print("i " + str(i) )
+
                 i=i+1
                 geom = elem['geometry'] 
                 insee = elem['properties']['insee'] 
                 p1 = shape(geom)
-<<<<<<< HEAD
+
                 listgeo.append(p1)
     
 
     listgeo = cascaded_union(listgeo) 
 
 
-=======
-                if not listgeo:
-                    print("vide")
-                    listgeo.append(mapping(p1)) 
-                    continue     
 
-                #print( str("########"+str(len(listgeo)) ) )
-                for geo in listgeo:
-                    p2 = shape(geo)
-                    print( "type: "+ p2.geom_type)
-                    if p1.intersects(p2) :
-                       p1 = p1.union(p2)
-                       #p1 = cascaded_union(p2)
-                       listgeo.remove(geo)
-                    print ( insee)
-                    
-                                     
-                listgeo.append(mapping(p1))
-    listres=[]
-    for g1 in listgeo:
-        p1 = shape(g1)
-        for g2 in listgeo:
-            p2 = shape(g2)
-            if p1.intersects(p2) :
-                p1 = p1.union(p2)
-                listgeo.remove(g2)
-        listres.append( mapping(p1))
-
->>>>>>> 045e220d107f2eb405d761823304798bbbefb736
     oschema_prop = OrderedDict([('id', 'str')])
     oschema = {'geometry': 'Polygon' , 'properties': oschema_prop }
     wgs84 = fiona.crs.from_epsg(4326)
@@ -259,13 +227,10 @@ def intersectionNonCouverteGeojson2():
 
     with fiona.open( filterNonCouvertesGeoJson ,'w', driver='GeoJSON' , crs= wgs84 ,schema= oschema ) as sortie:
                 i=0
-<<<<<<< HEAD
+
                 for elem in listgeo:
                     sortie.write({'geometry':mapping(elem) , 'properties':{'id': 'cnc' }  })       
-=======
-                for elem in listres:
-                    sortie.write({'geometry':elem , 'properties':{'id': str(i) }  })       
->>>>>>> 045e220d107f2eb405d761823304798bbbefb736
+
                     i = i+1     
     sortie.close()              
 
@@ -368,14 +333,8 @@ def traiteCommunes():
 #traiteCommunes()
 
 #doCouvertureGeojson()
-<<<<<<< HEAD
 intersectionNonCouverteGeojson2()
 
-=======
-#intersectionNonCouverteGeojson()
->>>>>>> 045e220d107f2eb405d761823304798bbbefb736
-
-intersectionNonCouverteGeojson2()
 
 # definition des fonctions de calcul
 # import math

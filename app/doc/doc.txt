@@ -3,6 +3,10 @@ Copie des fichiers /meteo/web/map/  html et js
 copie de la carto  sur  /meteo/web/map/tiles/......
 
 
+bounds domain france 
+-6.3, 41.27688, 9.8, 51.32937 
+
+
 LIEN 
 ln -s /meteo/web/map /var/www/html/map
 
