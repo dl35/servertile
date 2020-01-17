@@ -133,7 +133,7 @@ router.get('/apoc/:origin/:z/:x/:y', (req, res) => {
   }
 
 
-
+  res.header("Access-Control-Allow-Origin", "*");
   res.status(200).send(buff);
 });
 
