@@ -109,6 +109,8 @@ router.get('/apoc/:origin/:z/:x/:y', (req, res) => {
     const communes_nc = config.apocNonCouverteTileIndex.getTile(z, x, y) || emptyFeatCollection;
     const communes_union_nc = config.apocUnionNonCouverteTileIndex.getTile(z, x, y) || emptyFeatCollection;
 
+    console.log( 'zoom: ' , z)
+
     if ( z >= 9 ) {
       buff = vtpbf.fromGeojsonVt(  {'cnc': communes_nc } );
     }  else {
@@ -137,9 +139,63 @@ router.get('/apoc/:origin/:z/:x/:y', (req, res) => {
   res.status(200).send(buff);
 });
 
+////////////////////////////////////////////////////////////////////////////////////////////////////
 
 
+router.get('/store/apoc/:origin/:z/:x/:y', (req, res) => {
+  if (req.get('If-Modified-Since')) {
+    return res.status(304).send();
+  }
+  const origin = req.params.origin;
+  const [x, y, z] = [+req.params.x, +req.params.y, +req.params.z];
+  
+  var buff = null;
 
+  
+  // gestion de la couverture
+  if ( origin =='couvfr' ) {
+    const communes_nc = config.apocNonCouverteTileIndex.getTile(z, x, y) || emptyFeatCollection;
+    const communes_union_nc = config.apocUnionNonCouverteTileIndex.getTile(z, x, y) || emptyFeatCollection;
+
+    console.log( 'zoom: ' , z)
+
+    if ( z >= 9 ) {
+      buff = vtpbf.fromGeojsonVt(  {'cnc': communes_nc } );
+    }  else {
+      buff = vtpbf.fromGeojsonVt( {'cnc': communes_union_nc  });
+       }
+  }
+  else if ( origin =='fr' ) {
+    const dep = config.depTileIndex.getTile(z, x, y) || emptyFeatCollection;
+    const troncons = config.tronconsTileIndex.getTile(z, x, y) || emptyFeatCollection;
+    const exutoires = config.exutoiresTileIndex.getTile(z, x, y) || emptyFeatCollection;
+    const communes = config.communesTileIndex.getTile(z, x, y) || emptyFeatCollection;
+    
+    if ( z >= 10 ) {
+      buff = vtpbf.fromGeojsonVt(  {'communes': communes , 'tr' : troncons , 'exu' : exutoires} );
+    }
+    else if ( z == 9 ) {
+    const communes = config.communesTileIndex.getTile(z, x, y) || emptyFeatCollection;
+    buff = vtpbf.fromGeojsonVt(  {'communes': communes , 'tr' : troncons } );
+    } else {
+    buff = vtpbf.fromGeojsonVt( {'dep': dep  });
+       }
+  }
+
+  
+  var path = __dirname + '/tiles/apoc/pbf/'+origin+'/' + z + '/' + x ;
+  
+  fs.existsSync( path ) ||   fs.mkdirSync(path , { recursive: true } ) ;
+  var file = path +'/'+ y +'.pbf';
+  try {
+   console.log( origin +'...create file '+ z+'/'+x+'/'+y  ) ;
+  fs.writeFileSync( file , buff) ;
+  res.status(200).send('ok');
+} catch(err) { 
+  console.error(err);
+}
+  
+});
 
 
 ////////////////////////////////////////////////////////////////////////////////////////
@@ -187,7 +243,7 @@ router.get('/store/:origin/:z/:x/:y', (req, res) => {
 
  
   
-  var path = __dirname + '/tiles/'+origin+'/' + z + '/' + x ;
+  var path = __dirname + '/tiles/apic/pbf/'+origin+'/' + z + '/' + x ;
   
   fs.existsSync( path ) ||   fs.mkdirSync(path , { recursive: true } ) ;
   var file = path +'/'+ y +'.pbf';
@@ -200,7 +256,13 @@ router.get('/store/:origin/:z/:x/:y', (req, res) => {
 }
 });
 
+router.get('/static/*', (req, res) => {
+ var u = "http://oprodf1.smiro.meteo.fr" + req.path ;
+ console.log( u );
+res.redirect( u );
 
+
+});
 
 
 app.use(express.static(views));

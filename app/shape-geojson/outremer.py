@@ -53,10 +53,10 @@ def traiteReunion():
     
     with fiona.open( reunionShape ) as entree:
         
-        print ( entree.schema )   
-        print ( entree.crs )  
+        #print ( entree.schema )   
+        #print ( entree.crs )  
 
-        oschema_prop = OrderedDict([('id', 'str'), ('nom', 'str')])
+        oschema_prop = OrderedDict([('id', 'str:6'), ('nom', 'str')])
         oschema = {'geometry': entree.schema['geometry'] , 'properties': oschema_prop }
 
         with fiona.open( reunionGeoJson ,'w', driver='GeoJSON' , crs= entree.crs ,schema= oschema ) as sortie:
@@ -64,27 +64,30 @@ def traiteReunion():
             for elem in entree:
                 # conctruction du dictionnaire et sauvegarde 
                 geom = elem['geometry'] # puisque c'est la meme geometrie
-                prop = elem['properties'] 
+                #prop = elem['properties'] 
                             #creduce = set_precision( geom['coordinates'], 8 ) 
                             #geom = {'type': geom['type'] , 'coordinates': creduce  }
                 nom =  elem['properties']['NOM']      
-                insee =  elem['properties']['INSEE']      
+                insee =  elem['properties']['INSEE']  
+                if( len(str(insee)) == 5 ):
+                    insee = str(insee) + "0"     
                 prop = {'id': insee  , 'nom' : nom }
                 sortie.write({'geometry':geom, 'properties': prop})
                             #sortie.write( elem )
             
     entree.close()
     sortie.close()
+    print("Reunion ok")
 #################################################################################################
 def traiteGuadeloupe():
     deleteFile( guadeloupeGeoJson )
     
     with fiona.open( guadeloupeShape ) as entree:
         
-        print ( entree.schema )   
-        print ( entree.crs )  
+        #print ( entree.schema )   
+        #print ( entree.crs )  
 
-        oschema_prop = OrderedDict([('id', 'str'), ('nom', 'str')])
+        oschema_prop = OrderedDict([('id', 'str:6'), ('nom', 'str')])
         oschema = {'geometry': entree.schema['geometry'] , 'properties': oschema_prop }
 
         with fiona.open( guadeloupeGeoJson ,'w', driver='GeoJSON' , crs= entree.crs ,schema= oschema ) as sortie:
@@ -92,27 +95,30 @@ def traiteGuadeloupe():
             for elem in entree:
                 # conctruction du dictionnaire et sauvegarde 
                 geom = elem['geometry'] # puisque c'est la meme geometrie
-                prop = elem['properties'] 
+                #prop = elem['properties'] 
                             #creduce = set_precision( geom['coordinates'], 8 ) 
                             #geom = {'type': geom['type'] , 'coordinates': creduce  }
                 nom =  elem['properties']['NOM']      
-                insee =  elem['properties']['INSEE']      
+                insee =  elem['properties']['INSEE']    
+                if( len(str(insee)) == 5 ):
+                    insee = str(insee) + "0" 
                 prop = {'id': insee  , 'nom' : nom }
                 sortie.write({'geometry':geom, 'properties': prop})
                             #sortie.write( elem )
             
     entree.close()
     sortie.close()
+    print("Guadeloupe ok")
 ###################################################################################################    
 def traiteMartinique():
     deleteFile( martiniqueGeoJson )
     
     with fiona.open( martiniqueShape ) as entree:
         
-        print ( entree.schema )   
-        print ( entree.crs )  
+        #print ( entree.schema )   
+        #print ( entree.crs )  
 
-        oschema_prop = OrderedDict([('id', 'str'), ('nom', 'str')])
+        oschema_prop = OrderedDict([('id', 'str:6'), ('nom', 'str')])
         oschema = {'geometry': entree.schema['geometry'] , 'properties': oschema_prop }
 
         with fiona.open( martiniqueGeoJson ,'w', driver='GeoJSON' , crs= entree.crs ,schema= oschema ) as sortie:
@@ -120,17 +126,20 @@ def traiteMartinique():
             for elem in entree:
                 # conctruction du dictionnaire et sauvegarde 
                 geom = elem['geometry'] # puisque c'est la meme geometrie
-                prop = elem['properties'] 
+                #prop = elem['properties'] 
                             #creduce = set_precision( geom['coordinates'], 8 ) 
                             #geom = {'type': geom['type'] , 'coordinates': creduce  }
                 nom =  elem['properties']['NOM']      
-                insee =  elem['properties']['INSEE']      
+                insee =  elem['properties']['INSEE']   
+                if( len(str(insee)) == 5 ):
+                    insee = str(insee) + "0"    
                 prop = {'id': insee  , 'nom' : nom }
                 sortie.write({'geometry':geom, 'properties': prop})
                             #sortie.write( elem )
             
     entree.close()
     sortie.close()
+    print("Martinique ok")
 
 #######################################################################################################
 def traiteCaledonie():
@@ -138,10 +147,10 @@ def traiteCaledonie():
     
     with fiona.open( caledonieShape ) as entree:
         
-        print ( entree.schema )   
-        print ( entree.crs )  
+        #print ( entree.schema )   
+        #print ( entree.crs )  
 
-        oschema_prop = OrderedDict([('id', 'str'), ('nom', 'str')])
+        oschema_prop = OrderedDict([('id', 'str:6'), ('nom', 'str')])
         oschema = {'geometry': entree.schema['geometry'] , 'properties': oschema_prop }
 
         with fiona.open( caledonieGeoJson ,'w', driver='GeoJSON' , crs= entree.crs ,schema= oschema ) as sortie:
@@ -149,17 +158,20 @@ def traiteCaledonie():
             for elem in entree:
                 # conctruction du dictionnaire et sauvegarde 
                 geom = elem['geometry'] # puisque c'est la meme geometrie
-                prop = elem['properties'] 
+                #prop = elem['properties'] 
                             #creduce = set_precision( geom['coordinates'], 8 ) 
                             #geom = {'type': geom['type'] , 'coordinates': creduce  }
                 nom =  elem['properties']['NOM']      
-                insee =  elem['properties']['INSEE']      
+                insee =  elem['properties']['INSEE']
+                if( len(str(insee)) == 5 ):
+                    insee = str(insee) + "0"       
                 prop = {'id': insee  , 'nom' : nom }
                 sortie.write({'geometry':geom, 'properties': prop})
                             #sortie.write( elem )
             
     entree.close()
     sortie.close()
+    print("Caledonie ok")
 ##############################################################################################
 
 traiteReunion()
