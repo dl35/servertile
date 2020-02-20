@@ -4,29 +4,26 @@ var config={}
 
 
 
-depGeoJson = './geojson/dep.geojson'
+depGeoJson = './geojson/apic/dep.geojson'
 const depGeo = JSON.parse(fs.readFileSync( depGeoJson ));
 
-communesGeoJson = './geojson/communes.geojson'
+communesGeoJson = './geojson/apic/communes.geojson'
 const communesGeo = JSON.parse(fs.readFileSync( communesGeoJson ));
 
-polyCncJson = './geojson/noncouvertesfilter.geojson'
-const cncGeo = JSON.parse(fs.readFileSync( polyCncJson ));
+polyCnsJson = './geojson/apic/nonsurveillees.geojson'
+const cnsGeo = JSON.parse(fs.readFileSync( polyCnsJson ));
 
-reunionGeoJson = './geojson/reunion.geojson'
+reunionGeoJson = './geojson/apic/reunion.geojson'
 const reunionGeo= JSON.parse(fs.readFileSync( reunionGeoJson ));
 
-guadeloupeGeoJson = './geojson/guadeloupe.geojson'
+guadeloupeGeoJson = './geojson/apic/guadeloupe.geojson'
 const guadeloupeGeo= JSON.parse(fs.readFileSync( guadeloupeGeoJson ));
 
-
-martiniqueGeoJson = './geojson/martinique.geojson'
+martiniqueGeoJson = './geojson/apic/martinique.geojson'
 const martiniqueGeo= JSON.parse(fs.readFileSync( martiniqueGeoJson ));
 
-
-caledonieGeoJson = './geojson/caledonie.geojson'
+caledonieGeoJson = './geojson/apic/caledonie.geojson'
 const caledonieGeo= JSON.parse(fs.readFileSync( caledonieGeoJson ));
-
 
 tronconsGeoJson = './geojson/apoc/troncons.geojson'
 const tronconsGeo= JSON.parse(fs.readFileSync( tronconsGeoJson ));
@@ -34,11 +31,11 @@ const tronconsGeo= JSON.parse(fs.readFileSync( tronconsGeoJson ));
 exutoiresGeoJson = './geojson/apoc/exutoires.geojson'
 const exutoiresGeo= JSON.parse(fs.readFileSync( exutoiresGeoJson ));
 
-apoc_noncouverte = './geojson/apoc/noncouvertes.geojson'
-const apocNonCouverteGeo= JSON.parse(fs.readFileSync( apoc_noncouverte ));
-
-apoc_unionnoncouverte = './geojson/apoc/unionnoncouvertes.geojson'
-const apocUnionNonCouverteGeo= JSON.parse(fs.readFileSync( apoc_unionnoncouverte ));
+/*apoc_nonsurveillees = './geojson/apoc/nonsurveillees.geojson'
+const apocNonSurveilleesGeo= JSON.parse(fs.readFileSync( apoc_nonsurveillees ));
+*/
+apoc_union_nonsurveillees = './geojson/apoc/unionnonsurveillees.geojson'
+const apocUnionNonSurveilleesGeo= JSON.parse(fs.readFileSync( apoc_union_nonsurveillees ));
 
 
 // tile index for Vector Tiles
@@ -79,7 +76,7 @@ solidChildren: false,
 
 });
 
-config.cncTileIndex = geojsonvt(cncGeo, {
+config.cnsTileIndex = geojsonvt(cnsGeo, {
   //  buffer: 0,
   //  debug: 2,
   solidChildren: false,
@@ -145,7 +142,9 @@ config.cncTileIndex = geojsonvt(cncGeo, {
     });
 
 
-    config.apocNonCouverteTileIndex = geojsonvt(apocNonCouverteGeo, {
+
+/*
+    config.apocNonSurveilleesTileIndex = geojsonvt(apocNonSurveilleesGeo , {
         //  buffer: 0,
         //  debug: 2,
         solidChildren: false,
@@ -164,9 +163,9 @@ config.cncTileIndex = geojsonvt(cncGeo, {
         
         
         });
-
-
-        config.apocUnionNonCouverteTileIndex = geojsonvt(apocUnionNonCouverteGeo, {
+*/
+       
+        config.apocUnionNonSurveilleesTileIndex = geojsonvt(apocUnionNonSurveilleesGeo, {
             //  buffer: 0,
             //  debug: 2,
             solidChildren: false,

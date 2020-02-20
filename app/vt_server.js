@@ -43,7 +43,7 @@ router.get('/', function(req,res) {
 ///////////////////////////////////////////////////////////////////
 
 
-router.get('/:origin/:z/:x/:y', (req, res) => {
+router.get('/apic/:origin/:z/:x/:y', (req, res) => {
   if (req.get('If-Modified-Since')) {
     return res.status(304).send();
   }
@@ -66,14 +66,14 @@ router.get('/:origin/:z/:x/:y', (req, res) => {
   } else if ( origin =='nc' ) {
     om = config.caledonieTileIndex.getTile(z, x, y) || emptyFeatCollection;
     buff = vtpbf.fromGeojsonVt( {'communes': om  });
-  } else if ( origin =='cnc'  ) {
+  } else if ( origin =='cns'  ) {
     //communes non couverte
     if (  z < 10 ) {
-      const cnc = config.cncTileIndex.getTile(z, x, y) || emptyFeatCollection;
-      buff = vtpbf.fromGeojsonVt( { 'cnc': cnc   });
+      const cns = config.cnsTileIndex.getTile(z, x, y) || emptyFeatCollection;
+      buff = vtpbf.fromGeojsonVt( { 'cns': cns   });
     } else {
-      const cnc = emptyFeatCollection;
-      buff = vtpbf.fromGeojsonVt( { 'cnc': cnc   });
+      const cns = emptyFeatCollection;
+      buff = vtpbf.fromGeojsonVt( { 'cns': cns   });
     }
   } else if ( origin =='fr' ) {
     const dep = config.depTileIndex.getTile(z, x, y) || emptyFeatCollection;
@@ -91,6 +91,9 @@ router.get('/:origin/:z/:x/:y', (req, res) => {
   res.status(200).send(buff);
 });
 
+
+
+
 ////////////////////////////////////////////////////////////////////////////////////////
 
 
@@ -105,31 +108,29 @@ router.get('/apoc/:origin/:z/:x/:y', (req, res) => {
 
   
   // gestion de la couverture
-  if ( origin =='couvfr' ) {
-    const communes_nc = config.apocNonCouverteTileIndex.getTile(z, x, y) || emptyFeatCollection;
-    const communes_union_nc = config.apocUnionNonCouverteTileIndex.getTile(z, x, y) || emptyFeatCollection;
+  if ( origin =='cns' ) {
+   // const communes_nc = config.apocNonSurveilleesTileIndex.getTile(z, x, y) || emptyFeatCollection;
+    const communes_union_nc = config.apocUnionNonSurveilleesTileIndex.getTile(z, x, y) || emptyFeatCollection;
 
-    if ( z >= 9 ) {
-      buff = vtpbf.fromGeojsonVt(  {'cnc': communes_nc } );
+    console.log( 'zoom: ' , z)
+    buff = vtpbf.fromGeojsonVt( {'cns': communes_union_nc  });
+   /* if ( z >= 9 ) {
+      buff = vtpbf.fromGeojsonVt(  {'cns': communes_union_nc } );
     }  else {
-      buff = vtpbf.fromGeojsonVt( {'cnc': communes_union_nc  });
-       }
+      buff = vtpbf.fromGeojsonVt( {'cns': communes_union_nc  });
+       }*/
   }
   else if ( origin =='fr' ) {
-    const dep = config.depTileIndex.getTile(z, x, y) || emptyFeatCollection;
     const troncons = config.tronconsTileIndex.getTile(z, x, y) || emptyFeatCollection;
     const exutoires = config.exutoiresTileIndex.getTile(z, x, y) || emptyFeatCollection;
-    const communes = config.communesTileIndex.getTile(z, x, y) || emptyFeatCollection;
     
     if ( z >= 10 ) {
-      buff = vtpbf.fromGeojsonVt(  {'dep': dep  , 'communes': communes , 'tr' : troncons , 'exu' : exutoires} );
+      buff = vtpbf.fromGeojsonVt(  {'tr' : troncons , 'exu' : exutoires} );
     }
     else if ( z == 9 ) {
-    const communes = config.communesTileIndex.getTile(z, x, y) || emptyFeatCollection;
-    buff = vtpbf.fromGeojsonVt(  {'dep': dep  , 'communes': communes , 'tr' : troncons } );
-    } else {
-    buff = vtpbf.fromGeojsonVt( {'dep': dep  });
-       }
+    buff = vtpbf.fromGeojsonVt(  { 'tr' : troncons } );
+    } 
+
   }
 
 
@@ -137,9 +138,61 @@ router.get('/apoc/:origin/:z/:x/:y', (req, res) => {
   res.status(200).send(buff);
 });
 
+////////////////////////////////////////////////////////////////////////////////////////////////////
 
 
+router.get('/store/apoc/:origin/:z/:x/:y', (req, res) => {
+  if (req.get('If-Modified-Since')) {
+    return res.status(304).send();
+  }
+  const origin = req.params.origin;
+  const [x, y, z] = [+req.params.x, +req.params.y, +req.params.z];
+  
+  var buff = null;
 
+  
+  // gestion de la couverture
+  if ( origin =='cns' ) {
+    //const communes_nc = config.apocNonSurveilleesTileIndex.getTile(z, x, y) || emptyFeatCollection;
+    const communes_union_nc = config.apocUnionNonSurveilleesTileIndex.getTile(z, x, y) || emptyFeatCollection;
+
+    console.log( 'zoom: ' , z)
+    buff = vtpbf.fromGeojsonVt(  {'cns': communes_union_nc } );
+    /*if ( z >= 9 ) {
+      buff = vtpbf.fromGeojsonVt(  {'cns': communes_union_nc } );
+    }  else {
+      buff = vtpbf.fromGeojsonVt( {'cns': communes_union_nc  });
+       }*/
+  }
+  else if ( origin == 'fr' ) {
+    //const dep = config.depTileIndex.getTile(z, x, y) || emptyFeatCollection;
+    const troncons = config.tronconsTileIndex.getTile(z, x, y) || emptyFeatCollection;
+    const exutoires = config.exutoiresTileIndex.getTile(z, x, y) || emptyFeatCollection;
+    //const communes = config.communesTileIndex.getTile(z, x, y) || emptyFeatCollection;
+    if ( z >= 10 ) {
+      buff = vtpbf.fromGeojsonVt(  {'tr' : troncons , 'exu' : exutoires} );
+    }
+    else if ( z == 9 ) {
+    buff = vtpbf.fromGeojsonVt(  { 'tr' : troncons } );
+    } 
+
+    
+  }
+
+  
+  var path = __dirname + '/tiles/apoc/pbf/'+origin+'/' + z + '/' + x ;
+  
+  fs.existsSync( path ) ||   fs.mkdirSync(path , { recursive: true } ) ;
+  var file = path +'/'+ y +'.pbf';
+  try {
+   console.log( origin +'...create file '+ z+'/'+x+'/'+y  ) ;
+  fs.writeFileSync( file , buff) ;
+  res.status(200).send('ok');
+} catch(err) { 
+  console.error(err);
+}
+  
+});
 
 
 ////////////////////////////////////////////////////////////////////////////////////////
@@ -161,16 +214,16 @@ router.get('/store/:origin/:z/:x/:y', (req, res) => {
   } else if ( origin =='nc' ) {
     om = config.caledonieTileIndex.getTile(z, x, y) || emptyFeatCollection;
     buff = vtpbf.fromGeojsonVt( {'communes': om  });
-  } else if ( origin =='cnc' ) {
-    //communes non couverte
+  } else if ( origin =='cns' ) {
+    //communes non surveillé
     if (  z < 10 ) {
-      const cnc = config.cncTileIndex.getTile(z, x, y) || emptyFeatCollection;
-      if ( cnc.features.length == 0 ) 
+      const cns = config.cnsTileIndex.getTile(z, x, y) || emptyFeatCollection;
+      if ( cns.features.length == 0 ) 
           console.log( 'empty feature' )
-      buff = vtpbf.fromGeojsonVt( { 'cnc': cnc   });
+      buff = vtpbf.fromGeojsonVt( { 'cns': cns   });
     } else {
-      const cnc = emptyFeatCollection;
-      buff = vtpbf.fromGeojsonVt( { 'cnc': cnc   });
+      const cns = emptyFeatCollection;
+      buff = vtpbf.fromGeojsonVt( { 'cns': cns   });
     }
 
   } else if ( origin =='fr' ) {
@@ -179,15 +232,13 @@ router.get('/store/:origin/:z/:x/:y', (req, res) => {
     const communes = config.communesTileIndex.getTile(z, x, y) || emptyFeatCollection;
     buff = vtpbf.fromGeojsonVt(  {'dep': dep  , 'communes': communes   } );
     } else {
-    const cnc = config.cncTileIndex.getTile(z, x, y) || emptyFeatCollection;
-    buff = vtpbf.fromGeojsonVt( {'dep': dep  , 'cnc': cnc   });
-    
+    buff = vtpbf.fromGeojsonVt( {'dep': dep });
     }
+    
   } 
 
- 
   
-  var path = __dirname + '/tiles/'+origin+'/' + z + '/' + x ;
+  var path = __dirname + '/tiles/apic/pbf/'+origin+'/' + z + '/' + x ;
   
   fs.existsSync( path ) ||   fs.mkdirSync(path , { recursive: true } ) ;
   var file = path +'/'+ y +'.pbf';
@@ -200,11 +251,36 @@ router.get('/store/:origin/:z/:x/:y', (req, res) => {
 }
 });
 
+router.get('/static/*', (req, res) => {
+ var u = "http://oprodf1.smiro.meteo.fr" + req.path ;
+ console.log( u );
+res.redirect( u );
+
+
+});
+
+
+
+
+router.get('/statcns/:n', (req, res) => {
+
+  const n = req.params.n
+  console.log( n );
+
+  var file = __dirname +'/couverture/'+n  ;
+
+  res.header("Content-Type",'application/json');
+  res.header("Access-Control-Allow-Origin", "*");
+  res.sendFile( file );
+ 
+ });
+ 
 
 
 
 app.use(express.static(views));
-app.use('/tiles', express.static(__dirname + '/tiles'));
+
+//app.use('/tiles', express.static(__dirname + '/tiles'));
 app.use('/', router);
 
 

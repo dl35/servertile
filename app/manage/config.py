@@ -3,106 +3,106 @@
 NUM_WORKERS = 4
 BOUNDS = [
       [
-        -13.645019531250002,
+        -7.119,
         #minimum longitude (west)
-        41.27780646738183,
+        40.263,
         #minimum latitude (south)
       ],
       [
-        17.644042968750004,
+        13.052,
         #maximum longitude (east)
-        51.80861475198521
+        52.723
         #maximum latitude (north)
       ]
     ]
     
-MIN_ZOOM = 6 
-MAX_ZOOM = 8
+MIN_ZOOM = 12 
+MAX_ZOOM = 12
 
-################Communes non couvertes    
+################Communes non surveillees    
     
-MIN_ZOOM_CNC = 6 
-MAX_ZOOM_CNC = 9
+MIN_ZOOM_CNS = 6 
+MAX_ZOOM_CNS = 9
 
 
 ############################################################
 ################GUADELOUPE
 BOUNDS_GA = [
       [
-        -61.81,
+        -62.0439,
         #minimum longitude (west)
-        15.83,
+        15.6548,
         #minimum latitude (south)
       ],
       [
-        -61.16,
+        -60.7668,
         #maximum longitude (east)
-        16.52
+        16.6914
         #maximum latitude (north)
       ]
     ]
     
 MIN_ZOOM_GA = 10 
-MAX_ZOOM_GA = 13
+MAX_ZOOM_GA = 12
 
 ########################################################
 ################MARTINIQUE
 BOUNDS_MA = [
       [
-        -61.229,
+        -61.33,
         #minimum longitude (west)
-        14.3887
+        14.35
         #minimum latitude (south)
       ],
       [
-        -60.68097,
+        -60.7001,
         #maximum longitude (east)
-        14.8787
+        14.92
         #maximum latitude (north)
       ]
     ]
     
-MIN_ZOOM_MA = 11 
-MAX_ZOOM_MA = 13
+MIN_ZOOM_MA = 10 
+MAX_ZOOM_MA = 12
 
 ################REUNION
 BOUNDS_RE = [
       [
         #minimum longitude (west)
-        55.21 ,
+        54.8877 ,
         #minimum latitude (south)
-        -21.5904
+        -21.6332
         
         
       ],
       [
          #maximum longitude (east)
-        56.0508 , 
+        56.1649 , 
         #maximum latitude (north)
-        -20.6728
+        -20.6264
      
         
       ]
     ]
     
 MIN_ZOOM_RE = 10 
-MAX_ZOOM_RE = 13
+MAX_ZOOM_RE = 12
 
 ################CALEDONIE
 BOUNDS_NC = [
       [
-        162.6,
+        163.114,
         #minimum longitude (west)
-        -23.23,
+        -23.176,
         #minimum latitude (south)
       ],
       [
-        167.82,
+        168.223,
         #maximum longitude (east)
-        -17.68
+        -19.150
         #maximum latitude (north)
       ]
     ]
     
-MIN_ZOOM_NC = 7 
+MIN_ZOOM_NC = 8 
 MAX_ZOOM_NC = 10

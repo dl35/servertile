@@ -6,7 +6,7 @@ from config import BOUNDS_RE,MAX_ZOOM_RE,MIN_ZOOM_RE
 from config import BOUNDS_GA,MAX_ZOOM_GA,MIN_ZOOM_GA
 from config import BOUNDS_MA,MAX_ZOOM_MA,MIN_ZOOM_MA
 from config import BOUNDS_NC,MAX_ZOOM_NC,MIN_ZOOM_NC
-from config import MAX_ZOOM_CNC,MIN_ZOOM_CNC
+from config import MAX_ZOOM_CNS,MIN_ZOOM_CNS
 from threading import Thread
 import sys
 
@@ -19,7 +19,7 @@ import time
 
 
 def testOrigin(origin) :
-  lori= ["fr","re","ga","ma","nc","cnc"]
+  lori= ["fr","re","ga","ma","nc","cns"]
   if (origin in lori):
       return True
   else:
@@ -52,7 +52,7 @@ def worker():
 
 ######################################################################################################
 if len(sys.argv) < 2:
-    print("Veuillez saisir un argument , fr | re | ga | ma | nc ")
+    print("Veuillez saisir un argument , fr | re | ga | ma | nc | cns")
     sys.exit()
 origin = sys.argv[1]
 print( 'origin is ' + origin )
@@ -70,9 +70,9 @@ elif  origin == 'ma':
     tiles = dotiles(BOUNDS_MA, MIN_ZOOM_MA , MAX_ZOOM_MA )
 elif  origin == 'nc':
     tiles = dotiles(BOUNDS_NC, MIN_ZOOM_NC , MAX_ZOOM_NC )
-elif  origin == 'cnc':
+elif  origin == 'cns':
     # communes on couvertes
-    tiles = dotiles(BOUNDS, MIN_ZOOM_CNC , MAX_ZOOM_CNC )
+    tiles = dotiles(BOUNDS, MIN_ZOOM_CNS , MAX_ZOOM_CNS )
 
 
 task_queue = queue.Queue()

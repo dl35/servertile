@@ -22,7 +22,11 @@ def info(c):
 
 HOME = os.environ['HOME']
 
-communeShape = "/nas/dmap/dev/install/cdp_2009/data/latlon/commune-a.shp"
+#communeShape = "/nas/dmap/dev/install/cdp_2009/data/latlon/commune-a.shp"
+#communeShape = "/home/denis/Download/APIC/COMMUNES_APIC202001_WGS84/mycommunes.shp"
+
+communeShape = "/home/denis/Download/APIC/ref/mycommunes.shp"
+
 
 tronconShape = "/nas/dev/apic-apocs/shp-apocs/20191007/latlon/troncons.shp"
 exutoiresShape = "/nas/dev/apic-apocs/shp-apocs/20191007/latlon/exutoires.shp"
@@ -32,8 +36,8 @@ exutoiresGeoJson = HOME+ "/workspaceNode/servertile/app/geojson/apoc/exutoires.g
 
 
 couverture = "/nas/dev/apic-apocs/couverture-apoc/couverture-fr.20191007.csv"
-nonCouvertesGeoJson = HOME+ "/workspaceNode/servertile/app/geojson/apoc/noncouvertes.geojson"
-unionNonCouvertesGeoJson = HOME+"/workspaceNode/servertile/app/geojson/apoc/unionnoncouvertes.geojson"
+nonSurveilleesGeoJson = HOME+ "/workspaceNode/servertile/app/geojson/apoc/nonsurveillees.geojson"
+unionNonSurveilleesGeoJson = HOME+"/workspaceNode/servertile/app/geojson/apoc/unionnonsurveillees.geojson"
 
 
 def deleteFile( file ):
@@ -105,8 +109,53 @@ def traiteExutoires():
    print("exutoires geojson ok")
    
 ##################################################################################
-def doCouvertureGeojson():
-    deleteFile( nonCouvertesGeoJson )
+def doCouvertureGeojson2():
+    deleteFile( nonSurveilleesGeoJson )
+    liste = []
+    listgeo = []
+    with open( couverture , mode='r' ) as csvfile:
+        csv_reader = csv.DictReader( csvfile  , delimiter =';')
+        
+        for row in csv_reader:
+            v = dict( row )
+        
+            if v['COUVERTE'] == '0':
+                insee = v['INSEE'] #6 chars
+                
+                liste.append( insee[0:5] ) 
+    with fiona.open( communeShape ) as entree:
+        for elem in entree:
+            insee = elem['properties']['INSEE_COM']
+            #insee = insee 
+            if insee in liste:
+                
+                geom = elem['geometry'] 
+                p1 = shape(geom)
+               
+                if p1.is_valid :
+                   listgeo.append(p1)
+    listgeo = cascaded_union(listgeo)   
+    print( len(listgeo) )
+
+    oschema_prop = OrderedDict([('id', 'str')])
+    oschema = {'geometry': 'Polygon' , 'properties': oschema_prop }
+    wgs84 = fiona.crs.from_epsg(4326)
+
+    with fiona.open( nonSurveilleesGeoJson ,'w', driver='GeoJSON' , crs= wgs84 ,schema= oschema ) as sortie:
+                i=0
+
+                for elem in listgeo:
+                    elem = elem.simplify(0.0005, preserve_topology=True)
+                    sortie.write({'geometry':mapping(elem) , 'properties':{'id': 'cns' }  })       
+
+                    i = i+1     
+    sortie.close()               
+               
+    print("couverture geojson ok")
+    return    
+##################################################################################
+def doNonSurveilleesGeojson():
+    deleteFile( nonSurveilleesGeoJson )
     liste = []
     with open( couverture , mode='r' ) as csvfile:
         csv_reader = csv.DictReader( csvfile  , delimiter =';')
@@ -123,10 +172,10 @@ def doCouvertureGeojson():
         #print ( entree.schema )  
         #print ( entree.crs )    
 
-        oschema_prop = OrderedDict([('insee', 'str:5')])
+        oschema_prop = OrderedDict([('id', 'str')])
         oschema = {'geometry': entree.schema['geometry'] , 'properties': oschema_prop }
 
-        with fiona.open( nonCouvertesGeoJson ,'w', driver='GeoJSON' , crs= entree.crs ,schema= oschema ) as sortie:
+        with fiona.open( nonSurveilleesGeoJson ,'w', driver='GeoJSON' , crs= entree.crs ,schema= oschema ) as sortie:
             
             for elem in entree:
                 # conctruction du dictionnaire et sauvegarde 
@@ -134,31 +183,33 @@ def doCouvertureGeojson():
                 prop = elem['properties'] 
                 #creduce = set_precision( geom['coordinates'], 8 ) 
                 #geom = {'type': geom['type'] , 'coordinates': creduce  }
-                insee = elem['properties']['INSEE']
+                insee = elem['properties']['INSEE_COM']
                 if insee in liste:
-                    prop = {'insee': insee }
+                    prop = {'id': 'cns' }
                     sortie.write({'geometry':geom, 'properties': prop})
                 
             
     entree.close()
     sortie.close()           
-    print("couverture geojson ok")
+    print("communes non surveillees geojson ok")
     return    
 
 
 ############################################################################################################
-def doCouvertureUnionNonCouverteGeojson():
-    deleteFile( unionNonCouvertesGeoJson )
+def doUnionNonSurveilleesGeojson():
+    deleteFile( unionNonSurveilleesGeoJson )
     listgeo =[]
     
   
-    with fiona.open( nonCouvertesGeoJson ) as entree:
+    with fiona.open( nonSurveilleesGeoJson ) as entree:
          
             for elem in entree:
                 geom = elem['geometry'] 
                 #insee = elem['properties']['insee'] 
                 p1 = shape(geom)
-                listgeo.append(p1)
+                if p1.is_valid :
+                   listgeo.append(p1)
+                
     
 
     listgeo = cascaded_union(listgeo) 
@@ -168,17 +219,19 @@ def doCouvertureUnionNonCouverteGeojson():
     wgs84 = fiona.crs.from_epsg(4326)
 
 
-    with fiona.open( unionNonCouvertesGeoJson ,'w', driver='GeoJSON' , crs= wgs84 ,schema= oschema ) as sortie:
+    with fiona.open( unionNonSurveilleesGeoJson ,'w', driver='GeoJSON' , crs= wgs84 ,schema= oschema ) as sortie:
 
                 for elem in listgeo:
                     sortie.write({'geometry':mapping(elem) , 'properties':{'id': 'cnc' }  })       
                
     sortie.close()              
-    print("union couverture geojson ok")
+    print("union communes non surveillees geojson ok")
     return
 
 #######################################################################################################    
-traiteTroncons()
-traiteExutoires()
-doCouvertureGeojson()
-doCouvertureUnionNonCouverteGeojson()
+#traiteTroncons()
+#traiteExutoires()
+
+
+doNonSurveilleesGeojson()
+#doUnionNonSurveilleesGeojson()
