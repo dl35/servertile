@@ -35,9 +35,13 @@ depCsv = "/nas/dmap/dev/install/cdp_2009/src/deps.csv"
 couverture = "/nas/dev/apic-apocs/couverture-apic/couverture-fr.20191022.csv"
 
 noncouverte = "/home/denis/workspaceNode/servertile/app/map/noncouverte.json"
+<<<<<<< HEAD:app/shape-geojson/make-geojson.py
 nonCouvertesGeoJson = "/home/denis/workspaceNode/servertile/app/geojson/noncouvertes.geojson"
 filterNonCouvertesGeoJson = "/home/denis/workspaceNode/servertile/app/geojson/noncouvertesfilter.geojson"
 
+=======
+#noncouverte2 = "/home/denis/workspaceNode/servertile/app/map/noncouverte2.json"
+>>>>>>> 709bbcc5c6b5eb09809f2351388d0b124654eebf:app/shape-geojson/make-geojson.py
 
 
 ####################################################################################################
@@ -276,8 +280,13 @@ doNonCouverture()
 #traiteDepartements()
 #traiteCommunes()
 
+<<<<<<< HEAD:app/shape-geojson/make-geojson.py
 #doNonCouverteGeojson()
 #intersectionNonCouverteGeojson()
+=======
+#doCouvertureGeojson()
+#intersectionNonCouverteGeojson2()
+>>>>>>> 709bbcc5c6b5eb09809f2351388d0b124654eebf:app/shape-geojson/make-geojson.py
 
 
 # definition des fonctions de calcul

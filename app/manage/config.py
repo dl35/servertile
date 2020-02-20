@@ -16,7 +16,11 @@ BOUNDS = [
       ]
     ]
     
+<<<<<<< HEAD
 MIN_ZOOM = 12 
+=======
+MIN_ZOOM = 6 
+>>>>>>> 709bbcc5c6b5eb09809f2351388d0b124654eebf
 MAX_ZOOM = 12
 
 ################Communes non surveillees    
@@ -49,15 +53,25 @@ MAX_ZOOM_GA = 12
 ################MARTINIQUE
 BOUNDS_MA = [
       [
+<<<<<<< HEAD
         -61.33,
         #minimum longitude (west)
         14.35
+=======
+        -61.3387,
+        #minimum longitude (west)
+        14.3728
+>>>>>>> 709bbcc5c6b5eb09809f2351388d0b124654eebf
         #minimum latitude (south)
       ],
       [
         -60.7001,
         #maximum longitude (east)
+<<<<<<< HEAD
         14.92
+=======
+        14.8950
+>>>>>>> 709bbcc5c6b5eb09809f2351388d0b124654eebf
         #maximum latitude (north)
       ]
     ]

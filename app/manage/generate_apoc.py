@@ -14,7 +14,11 @@ import time
 
 
 def testOrigin(origin) :
+<<<<<<< HEAD
   lori= ["fr","cns"]
+=======
+  lori= ["fr","couvfr"]
+>>>>>>> 709bbcc5c6b5eb09809f2351388d0b124654eebf
   if (origin in lori):
       return True
   else:
@@ -47,7 +51,11 @@ def worker():
 
 ######################################################################################################
 if len(sys.argv) < 2:
+<<<<<<< HEAD
     print("Veuillez saisir un argument , fr | cns ")
+=======
+    print("Veuillez saisir un argument , fr | couvfr ")
+>>>>>>> 709bbcc5c6b5eb09809f2351388d0b124654eebf
     sys.exit()
 origin = sys.argv[1]
 print( 'origin is ' + origin )
@@ -57,7 +65,11 @@ if not testOrigin( origin):
    sys.exit()
 if origin == 'fr':
     tiles = dotiles(BOUNDS, MIN_ZOOM , MAX_ZOOM )
+<<<<<<< HEAD
 elif  origin == 'cns':
+=======
+elif  origin == 'couvfr':
+>>>>>>> 709bbcc5c6b5eb09809f2351388d0b124654eebf
     tiles = dotiles(BOUNDS, MIN_ZOOM , MAX_ZOOM )
 
 

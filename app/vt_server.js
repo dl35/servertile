@@ -108,6 +108,7 @@ router.get('/apoc/:origin/:z/:x/:y', (req, res) => {
 
   
   // gestion de la couverture
+<<<<<<< HEAD
   if ( origin =='cns' ) {
    // const communes_nc = config.apocNonSurveilleesTileIndex.getTile(z, x, y) || emptyFeatCollection;
     const communes_union_nc = config.apocUnionNonSurveilleesTileIndex.getTile(z, x, y) || emptyFeatCollection;
@@ -116,6 +117,16 @@ router.get('/apoc/:origin/:z/:x/:y', (req, res) => {
     buff = vtpbf.fromGeojsonVt( {'cns': communes_union_nc  });
    /* if ( z >= 9 ) {
       buff = vtpbf.fromGeojsonVt(  {'cns': communes_union_nc } );
+=======
+  if ( origin =='couvfr' ) {
+    const communes_nc = config.apocNonCouverteTileIndex.getTile(z, x, y) || emptyFeatCollection;
+    const communes_union_nc = config.apocUnionNonCouverteTileIndex.getTile(z, x, y) || emptyFeatCollection;
+
+    console.log( 'zoom: ' , z)
+
+    if ( z >= 9 ) {
+      buff = vtpbf.fromGeojsonVt(  {'cnc': communes_nc } );
+>>>>>>> 709bbcc5c6b5eb09809f2351388d0b124654eebf
     }  else {
       buff = vtpbf.fromGeojsonVt( {'cns': communes_union_nc  });
        }*/
@@ -152,6 +163,7 @@ router.get('/store/apoc/:origin/:z/:x/:y', (req, res) => {
 
   
   // gestion de la couverture
+<<<<<<< HEAD
   if ( origin =='cns' ) {
     //const communes_nc = config.apocNonSurveilleesTileIndex.getTile(z, x, y) || emptyFeatCollection;
     const communes_union_nc = config.apocUnionNonSurveilleesTileIndex.getTile(z, x, y) || emptyFeatCollection;
@@ -177,6 +189,35 @@ router.get('/store/apoc/:origin/:z/:x/:y', (req, res) => {
     } 
 
     
+=======
+  if ( origin =='couvfr' ) {
+    const communes_nc = config.apocNonCouverteTileIndex.getTile(z, x, y) || emptyFeatCollection;
+    const communes_union_nc = config.apocUnionNonCouverteTileIndex.getTile(z, x, y) || emptyFeatCollection;
+
+    console.log( 'zoom: ' , z)
+
+    if ( z >= 9 ) {
+      buff = vtpbf.fromGeojsonVt(  {'cnc': communes_nc } );
+    }  else {
+      buff = vtpbf.fromGeojsonVt( {'cnc': communes_union_nc  });
+       }
+  }
+  else if ( origin =='fr' ) {
+    const dep = config.depTileIndex.getTile(z, x, y) || emptyFeatCollection;
+    const troncons = config.tronconsTileIndex.getTile(z, x, y) || emptyFeatCollection;
+    const exutoires = config.exutoiresTileIndex.getTile(z, x, y) || emptyFeatCollection;
+    const communes = config.communesTileIndex.getTile(z, x, y) || emptyFeatCollection;
+    
+    if ( z >= 10 ) {
+      buff = vtpbf.fromGeojsonVt(  {'communes': communes , 'tr' : troncons , 'exu' : exutoires} );
+    }
+    else if ( z == 9 ) {
+    const communes = config.communesTileIndex.getTile(z, x, y) || emptyFeatCollection;
+    buff = vtpbf.fromGeojsonVt(  {'communes': communes , 'tr' : troncons } );
+    } else {
+    buff = vtpbf.fromGeojsonVt( {'dep': dep  });
+       }
+>>>>>>> 709bbcc5c6b5eb09809f2351388d0b124654eebf
   }
 
   
@@ -256,6 +297,7 @@ router.get('/static/*', (req, res) => {
  console.log( u );
 res.redirect( u );
 
+<<<<<<< HEAD
 
 });
 
@@ -275,7 +317,10 @@ router.get('/statcns/:n', (req, res) => {
  
  });
  
+=======
+>>>>>>> 709bbcc5c6b5eb09809f2351388d0b124654eebf
 
+});
 
 
 app.use(express.static(views));
